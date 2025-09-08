@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-02-10 Sat 10:48 -->
+<!-- 2025-09-08 Mon 15:00 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sampling Scope Prototype</title>
@@ -24,9 +24,9 @@
 <i>February 2024</i>
 </p>
 
-<div id="outline-container-org7d2e055" class="outline-2">
-<h2 id="org7d2e055">Introduction</h2>
-<div class="outline-text-2" id="text-org7d2e055">
+<div id="outline-container-orgf6f6531" class="outline-2">
+<h2 id="orgf6f6531">Introduction</h2>
+<div class="outline-text-2" id="text-orgf6f6531">
 <p>
 This post describes a prototype sampling oscilloscope I'm working on.
 </p>
@@ -46,25 +46,25 @@ cases for this class of instrument.
 </div>
 </div>
 
-<div id="outline-container-org3e96fa9" class="outline-2">
-<h2 id="org3e96fa9">Design</h2>
-<div class="outline-text-2" id="text-org3e96fa9">
+<div id="outline-container-orgf135afe" class="outline-2">
+<h2 id="orgf135afe">Design</h2>
+<div class="outline-text-2" id="text-orgf135afe">
 </div>
-<div id="outline-container-org4662ee6" class="outline-3">
-<h3 id="org4662ee6">Not Invented Here (Literally)</h3>
-<div class="outline-text-3" id="text-org4662ee6">
+<div id="outline-container-org94e3966" class="outline-3">
+<h3 id="org94e3966">Not Invented Here</h3>
+<div class="outline-text-3" id="text-org94e3966">
 <p>
 Let me say upfront that I don't take any credit whatsoever for the
 high-level design of this device. The basic idea has been around for a
 long time, and my take on it borrows heavily from a recent <a href="https://hackaday.io/project/167292-8-ghz-sampling-oscilloscope">project</a> by
-Ted Yapo. I provide a slightly more comprehensive <a href="#org25216c1">history</a> below.
+Ted Yapo. I provide a slightly more comprehensive <a href="#org2099b23">history</a> below.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org3525ca2" class="outline-3">
-<h3 id="org3525ca2">Equivalent Time Sampling</h3>
-<div class="outline-text-3" id="text-org3525ca2">
+<div id="outline-container-org1b246b7" class="outline-3">
+<h3 id="org1b246b7">Equivalent Time Sampling</h3>
+<div class="outline-text-3" id="text-org1b246b7">
 <p>
 The design builds on the principle of sequential equivalent time
 sampling. The idea here is to exploit the (assumed) repetitive nature
@@ -88,7 +88,7 @@ collected.
 </p>
 
 
-<div id="orgf73af00" class="figure">
+<div id="org33ec232" class="figure">
 <p><img src="images/scope-sets.png" alt="scope-sets.png" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Sequential equivalent time sampling.</p>
@@ -103,9 +103,9 @@ is taken within a repetition, traditionally called a time-base.
 </div>
 </div>
 
-<div id="outline-container-org4ac0bc2" class="outline-3">
-<h3 id="org4ac0bc2">Sampling</h3>
-<div class="outline-text-3" id="text-org4ac0bc2">
+<div id="outline-container-org7b7bca5" class="outline-3">
+<h3 id="org7b7bca5">Sampling</h3>
+<div class="outline-text-3" id="text-org7b7bca5">
 <p>
 Accurately sampling the input with the requisite bandwidth is a
 non-trivial undertaking, especially on a budget.
@@ -133,9 +133,9 @@ they are relatively inexpensive.
 </div>
 </div>
 
-<div id="outline-container-org186988a" class="outline-3">
-<h3 id="org186988a">Time-base</h3>
-<div class="outline-text-3" id="text-org186988a">
+<div id="outline-container-org2cb0952" class="outline-3">
+<h3 id="org2cb0952">Time-base</h3>
+<div class="outline-text-3" id="text-org2cb0952">
 <p>
 Sequential equivalent time sampling requires some way to synchronise
 the scope and the device under test (DUT). For simplicity, I currently
@@ -162,15 +162,15 @@ which the delay length can be calculated<sup><a id="fnr.3" class="footref" href=
 </div>
 </div>
 
-<div id="outline-container-orgb753a50" class="outline-3">
-<h3 id="orgb753a50">Block Diagram</h3>
-<div class="outline-text-3" id="text-orgb753a50">
+<div id="outline-container-org9100a15" class="outline-3">
+<h3 id="org9100a15">Block Diagram</h3>
+<div class="outline-text-3" id="text-org9100a15">
 <p>
 This block diagram illustrates the high level design just described:
 </p>
 
 
-<div id="orgaf46c8c" class="figure">
+<div id="org3cbadf4" class="figure">
 <p><img src="images/scope-block-diagram.png" alt="scope-block-diagram.png" />
 </p>
 <p><span class="figure-number">Figure 2: </span>Sampling scope block diagram.</p>
@@ -178,9 +178,9 @@ This block diagram illustrates the high level design just described:
 </div>
 </div>
 
-<div id="outline-container-org25216c1" class="outline-3">
-<h3 id="org25216c1">History</h3>
-<div class="outline-text-3" id="text-org25216c1">
+<div id="outline-container-org2099b23" class="outline-3">
+<h3 id="org2099b23">History</h3>
+<div class="outline-text-3" id="text-org2099b23">
 <p>
 Here's a potted history of this idea, as best I know it:
 </p>
@@ -199,11 +199,11 @@ one publication from a larger NIST research effort.</li>
 </div>
 </div>
 
-<div id="outline-container-org90e6529" class="outline-2">
-<h2 id="org90e6529">Build</h2>
-<div class="outline-text-2" id="text-org90e6529">
+<div id="outline-container-org2548d07" class="outline-2">
+<h2 id="org2548d07">Build</h2>
+<div class="outline-text-2" id="text-org2548d07">
 
-<div id="orgbf63a0f" class="figure">
+<div id="org2ec4361" class="figure">
 <p><a href="images/scope-prototype-original.jpg"><img src="images/scope-prototype-small.jpg" alt="scope-prototype-small.jpg" /></a>
 </p>
 <p><span class="figure-number">Figure 3: </span>Photo of the prototype.</p>
@@ -239,9 +239,9 @@ the SMA connector used at the input. I've shared details of this in a
 </div>
 </div>
 
-<div id="outline-container-orgd0ae825" class="outline-2">
-<h2 id="orgd0ae825">Testing</h2>
-<div class="outline-text-2" id="text-orgd0ae825">
+<div id="outline-container-org5eb8cf8" class="outline-2">
+<h2 id="org5eb8cf8">Testing</h2>
+<div class="outline-text-2" id="text-org5eb8cf8">
 <p>
 Initial testing has been performed using a fast edge generator as the
 DUT. This is based on an Analog Devices ADCMP580 comparator, which has
@@ -254,7 +254,7 @@ Here's an example measurement taken with the scope:
 </p>
 
 
-<div id="org94ebda3" class="figure">
+<div id="org4844b94" class="figure">
 <p><img src="images/scope-sweep.png" alt="scope-sweep.png" />
 </p>
 <p><span class="figure-number">Figure 4: </span>Example sweep captured by the prototype.</p>
@@ -271,9 +271,9 @@ to the 8 GHz bandwidth of the comparator<sup><a id="fnr.5" class="footref" href=
 </div>
 </div>
 
-<div id="outline-container-orgb186c9d" class="outline-2">
-<h2 id="orgb186c9d">Next Steps</h2>
-<div class="outline-text-2" id="text-orgb186c9d">
+<div id="outline-container-org0b9ec6c" class="outline-2">
+<h2 id="org0b9ec6c">Next Steps</h2>
+<div class="outline-text-2" id="text-org0b9ec6c">
 <p>
 Some obvious next steps include:
 </p>
@@ -330,7 +330,7 @@ bandwidth somewhere around 12 GHz.
 </p></div></div>
 
 <div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-I cherry-picked the <a href="#org94ebda3">example sweep</a> to avoid this.
+I cherry-picked the <a href="#org4844b94">example sweep</a> to avoid this.
 </p></div></div>
 
 

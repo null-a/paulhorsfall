@@ -21,7 +21,7 @@ overall approach.
 
 * Design
 
-** Not Invented Here (Literally)
+** Not Invented Here
 
 Let me say upfront that I don't take any credit whatsoever for the
 high-level design of this device. The basic idea has been around for a
