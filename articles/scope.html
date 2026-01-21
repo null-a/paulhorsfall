@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2025-09-08 Mon 15:00 -->
+<!-- 2026-01-21 Wed 15:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Sampling Scope Prototype</title>
-<meta name="author" content="Paul Horsfall" />
 <meta name="generator" content="Org Mode" />
 
 <link rel="stylesheet" href="/css/sp.css" type="text/css" />
@@ -16,17 +14,16 @@
 </head>
 <body>
 <div id="preamble" class="status">
-<a href="/">&#10548;Home</a>
+<a href="/">Home</a>
 </div>
 <div id="content" class="content">
 <h1 class="title">Sampling Scope Prototype</h1>
 <p>
 <i>February 2024</i>
 </p>
-
-<div id="outline-container-orgf6f6531" class="outline-2">
-<h2 id="orgf6f6531">Introduction</h2>
-<div class="outline-text-2" id="text-orgf6f6531">
+<div id="outline-container-orgaa62841" class="outline-2">
+<h2 id="orgaa62841">Introduction</h2>
+<div class="outline-text-2" id="text-orgaa62841">
 <p>
 This post describes a prototype sampling oscilloscope I'm working on.
 </p>
@@ -45,26 +42,24 @@ cases for this class of instrument.
 </p>
 </div>
 </div>
-
-<div id="outline-container-orgf135afe" class="outline-2">
-<h2 id="orgf135afe">Design</h2>
-<div class="outline-text-2" id="text-orgf135afe">
+<div id="outline-container-orgc69ea6a" class="outline-2">
+<h2 id="orgc69ea6a">Design</h2>
+<div class="outline-text-2" id="text-orgc69ea6a">
 </div>
-<div id="outline-container-org94e3966" class="outline-3">
-<h3 id="org94e3966">Not Invented Here</h3>
-<div class="outline-text-3" id="text-org94e3966">
+<div id="outline-container-orga6ee328" class="outline-3">
+<h3 id="orga6ee328">Not Invented Here</h3>
+<div class="outline-text-3" id="text-orga6ee328">
 <p>
 Let me say upfront that I don't take any credit whatsoever for the
 high-level design of this device. The basic idea has been around for a
 long time, and my take on it borrows heavily from a recent <a href="https://hackaday.io/project/167292-8-ghz-sampling-oscilloscope">project</a> by
-Ted Yapo. I provide a slightly more comprehensive <a href="#org2099b23">history</a> below.
+Ted Yapo. I provide a slightly more comprehensive <a href="#org10a74d3">history</a> below.
 </p>
 </div>
 </div>
-
-<div id="outline-container-org1b246b7" class="outline-3">
-<h3 id="org1b246b7">Equivalent Time Sampling</h3>
-<div class="outline-text-3" id="text-org1b246b7">
+<div id="outline-container-org8b34d7c" class="outline-3">
+<h3 id="org8b34d7c">Equivalent Time Sampling</h3>
+<div class="outline-text-3" id="text-org8b34d7c">
 <p>
 The design builds on the principle of sequential equivalent time
 sampling. The idea here is to exploit the (assumed) repetitive nature
@@ -88,7 +83,7 @@ collected.
 </p>
 
 
-<div id="org33ec232" class="figure">
+<div id="org62d6dcb" class="figure">
 <p><img src="images/scope-sets.png" alt="scope-sets.png" />
 </p>
 <p><span class="figure-number">Figure 1: </span>Sequential equivalent time sampling.</p>
@@ -102,10 +97,9 @@ is taken within a repetition, traditionally called a time-base.
 </p>
 </div>
 </div>
-
-<div id="outline-container-org7b7bca5" class="outline-3">
-<h3 id="org7b7bca5">Sampling</h3>
-<div class="outline-text-3" id="text-org7b7bca5">
+<div id="outline-container-org4bac9c1" class="outline-3">
+<h3 id="org4bac9c1">Sampling</h3>
+<div class="outline-text-3" id="text-org4bac9c1">
 <p>
 Accurately sampling the input with the requisite bandwidth is a
 non-trivial undertaking, especially on a budget.
@@ -132,10 +126,9 @@ they are relatively inexpensive.
 </p>
 </div>
 </div>
-
-<div id="outline-container-org2cb0952" class="outline-3">
-<h3 id="org2cb0952">Time-base</h3>
-<div class="outline-text-3" id="text-org2cb0952">
+<div id="outline-container-org1069936" class="outline-3">
+<h3 id="org1069936">Time-base</h3>
+<div class="outline-text-3" id="text-org1069936">
 <p>
 Sequential equivalent time sampling requires some way to synchronise
 the scope and the device under test (DUT). For simplicity, I currently
@@ -161,26 +154,24 @@ which the delay length can be calculated<sup><a id="fnr.3" class="footref" href=
 </p>
 </div>
 </div>
-
-<div id="outline-container-org9100a15" class="outline-3">
-<h3 id="org9100a15">Block Diagram</h3>
-<div class="outline-text-3" id="text-org9100a15">
+<div id="outline-container-org01696ae" class="outline-3">
+<h3 id="org01696ae">Block Diagram</h3>
+<div class="outline-text-3" id="text-org01696ae">
 <p>
 This block diagram illustrates the high level design just described:
 </p>
 
 
-<div id="org3cbadf4" class="figure">
+<div id="org95303da" class="figure">
 <p><img src="images/scope-block-diagram.png" alt="scope-block-diagram.png" />
 </p>
 <p><span class="figure-number">Figure 2: </span>Sampling scope block diagram.</p>
 </div>
 </div>
 </div>
-
-<div id="outline-container-org2099b23" class="outline-3">
-<h3 id="org2099b23">History</h3>
-<div class="outline-text-3" id="text-org2099b23">
+<div id="outline-container-org10a74d3" class="outline-3">
+<h3 id="org10a74d3">History</h3>
+<div class="outline-text-3" id="text-org10a74d3">
 <p>
 Here's a potted history of this idea, as best I know it:
 </p>
@@ -198,12 +189,11 @@ one publication from a larger NIST research effort.</li>
 </div>
 </div>
 </div>
+<div id="outline-container-org1300991" class="outline-2">
+<h2 id="org1300991">Build</h2>
+<div class="outline-text-2" id="text-org1300991">
 
-<div id="outline-container-org2548d07" class="outline-2">
-<h2 id="org2548d07">Build</h2>
-<div class="outline-text-2" id="text-org2548d07">
-
-<div id="org2ec4361" class="figure">
+<div id="org696b02d" class="figure">
 <p><a href="images/scope-prototype-original.jpg"><img src="images/scope-prototype-small.jpg" alt="scope-prototype-small.jpg" /></a>
 </p>
 <p><span class="figure-number">Figure 3: </span>Photo of the prototype.</p>
@@ -238,10 +228,9 @@ the SMA connector used at the input. I've shared details of this in a
 </p>
 </div>
 </div>
-
-<div id="outline-container-org5eb8cf8" class="outline-2">
-<h2 id="org5eb8cf8">Testing</h2>
-<div class="outline-text-2" id="text-org5eb8cf8">
+<div id="outline-container-org55359a1" class="outline-2">
+<h2 id="org55359a1">Testing</h2>
+<div class="outline-text-2" id="text-org55359a1">
 <p>
 Initial testing has been performed using a fast edge generator as the
 DUT. This is based on an Analog Devices ADCMP580 comparator, which has
@@ -254,7 +243,7 @@ Here's an example measurement taken with the scope:
 </p>
 
 
-<div id="org4844b94" class="figure">
+<div id="org3603f0e" class="figure">
 <p><img src="images/scope-sweep.png" alt="scope-sweep.png" />
 </p>
 <p><span class="figure-number">Figure 4: </span>Example sweep captured by the prototype.</p>
@@ -270,10 +259,9 @@ to the 8 GHz bandwidth of the comparator<sup><a id="fnr.5" class="footref" href=
 </p>
 </div>
 </div>
-
-<div id="outline-container-org0b9ec6c" class="outline-2">
-<h2 id="org0b9ec6c">Next Steps</h2>
-<div class="outline-text-2" id="text-org0b9ec6c">
+<div id="outline-container-org54e7e6a" class="outline-2">
+<h2 id="org54e7e6a">Next Steps</h2>
+<div class="outline-text-2" id="text-org54e7e6a">
 <p>
 Some obvious next steps include:
 </p>
@@ -330,7 +318,7 @@ bandwidth somewhere around 12 GHz.
 </p></div></div>
 
 <div class="footdef"><sup><a id="fn.6" class="footnum" href="#fnr.6" role="doc-backlink">6</a></sup> <div class="footpara" role="doc-footnote"><p class="footpara">
-I cherry-picked the <a href="#org4844b94">example sweep</a> to avoid this.
+I cherry-picked the <a href="#org3603f0e">example sweep</a> to avoid this.
 </p></div></div>
 
 
