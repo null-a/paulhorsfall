@@ -4,526 +4,741 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="Paul Horsfall" />
   <title>Probabilistic Programming with Typed Traces in Lean</title>
   <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
-  </style>
-  <style>
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {  }
+{ }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-  </style>
-  <style type="text/css">p { text-align: justify; }
-body { font-family: Helvetica; color: #333; line-height: 1.5; max-width: 40em; margin: 0 auto; padding: 0 1em; }
-pre { padding: 2em 0; }
-.footnotes { font-size: 0.8em; }
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
+  <style type="text/css">body {
+color: #333;
+font-family: helvetica, arial, sans-serif;
+line-height: 1.5;
+margin: 0;
+padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+margin: 1em 0 0.5em 0;
+line-height: 1.2;
+}
+a:link {
+color: #00e;
+}
+a:visited {
+color: #518;
+}
+a:focus, a:hover {
+color: #00e;
+}
+a:active {
+color: #e00;
+}
+h1 a:empty:before, h2 a:empty:before, h3 a:empty:before,
+h4 a:empty:before, h5 a:empty:before, h6 a:empty:before {
+content: "#";
+}
+h1 a:empty, h2 a:empty, h3 a:empty, h4 a:empty, h5 a:empty, h6 a:empty {
+visibility: hidden;
+padding-left: 0.25em;
+}
+h1:hover a:empty, h2:hover a:empty, h3:hover a:empty,
+h4:hover a:empty, h5:hover a:empty, h6:hover a:empty {
+visibility: visible;
+}
+pre, code, samp, kbd {
+padding: 2em 0;
+}
+.footnotes {
+font-size: 0.8em;
+}
+#preamble { margin: 0; padding: 0.4em; border-bottom: 1px solid #999; }
+#content { margin: 0 auto; padding: 0 1em; max-width: 40em; }
+</style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Probabilistic Programming with Typed Traces in Lean</h1>
-<p class="author">Paul Horsfall</p>
-<p class="date">June 2025</p>
-</header>
-<nav id="TOC">
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#background">Background</a></li>
-<li><a href="#traces">Traces</a></li>
-<li><a href="#syntax">Syntax</a></li>
-<li><a href="#interpreters">Interpreters</a></li>
-<li><a href="#observing-data">Observing Data</a></li>
-<li><a href="#inference">Inference</a></li>
-<li><a href="#example">Example</a></li>
-<li><a href="#next-steps">Next Steps</a></li>
-<li><a href="#related-work">Related Work</a></li>
-</ul>
-</nav>
-<h1 id="introduction">Introduction</h1>
-<p>I’ve been experimenting with implementing ideas from probabilistic programming in a dependently typed language. This article documents one particular path I’ve explored in Lean.</p>
-<p>In particular, it describes a DSL in which a probabilistic program’s sample space is reflected in its type, and then uses this language to express some very simple models and inference algorithms.</p>
-<h1 id="background">Background</h1>
-<p>I’m interested in probabilistic programming languages for Bayesian inference. In this setting, a probabilistic program is written to describe a probabilistic model (assumed to describe some process of interest), data generated by the process are combined with the model as “observations”, then (approximate) inference is performed to obtained posterior beliefs.</p>
-<p>In this work, a probabilistic program is a regular functional program augmented with an effectful <code>flip</code> operation, taking a success probability as argument and returning a <code>Bool</code>.</p>
-<p>Intuitively, we interpret such a program as a stochastic procedure that draws samples from a Bernoulli distribution at <code>flip</code> statements, and accumulates these sampled values in a data structure called a “trace”. More generally, a probabilistic program can be thought of as representing a probability distribution over such traces. We can write interpreters to e.g. sample from this distribution, or compute the probability density of a trace under the distribution, etc.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
-<p>Here, probabilistic programs also have a <code>factor</code> operation, which is used to weight to samples from the program. This is the basic mechanism on which the ability to incorporate observed data is built.</p>
-<p>Inference procedures can be built compositionally from the parts just described. My focus here is on the use of types to help ensure the correctness of such compositions.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">import</span><span class="im"> Lean.Data</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">set_option</span> autoImplicit <span class="cn">true</span></a></code></pre></div>
-<h1 id="traces">Traces</h1>
-<p>I’m primarily interested in statically describing the possible shapes that the trace generated by a given probabilistic program can take. (Equivalently, the support of the probability distribution over traces.) When performing inference for a probabilistic program, we often have to give an auxilliary probabilistic program (proposal, guide, etc.), and these two programs need to be compatible in some sense. Often this is checked at run-time, but here I’m trying to do this statically with types.</p>
-<p>Intuitively, a program that flips two coins might generate a trace with type something like <code>Vec Bool 2</code>, capturing both the number of random choices made and their types.</p>
-<p>More generally, a program might sample from primitive distributions of differing types, so we’ll use heterogeneous lists as the basis of the trace representation.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb2-1" title="1"><span class="co">-- typically called `HList`, but i&#39;m calling it `Tr` to be suggestive</span></a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="co">-- of &quot;trace&quot;</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="kw">abbrev</span><span class="fu"> Tr </span>: List <span class="bu">Type</span> -&gt; <span class="bu">Type</span></a>
-<a class="sourceLine" id="cb2-4" title="4">  | [] =&gt; Unit</a>
-<a class="sourceLine" id="cb2-5" title="5">  | t::ts =&gt; t × Tr ts</a>
-<a class="sourceLine" id="cb2-6" title="6"></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="kw">example</span> : Tr [Bool, Bool] := (<span class="cn">true</span>, <span class="cn">false</span>, ())</a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="kw">example</span> : Tr [Float, Bool] := (<span class="fl">0.0</span>, <span class="cn">false</span>, ())</a></code></pre></div>
-<p>One of the appeals of probabilistic programs is that they can describe complex distributions with structural choices. For example, a program might first flip a coin, and then flip a second coin only if the first came up heads. I accomodate this with the following type:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb3-1" title="1"><span class="co">-- a branching structure</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw">structure</span><span class="fu"> Br </span>(s t : List <span class="bu">Type</span>) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-3" title="3">  val : Bool</a>
-<a class="sourceLine" id="cb3-4" title="4">  sub : <span class="cf">match</span> val <span class="kw">with</span> | <span class="cn">true</span> =&gt; Tr s | <span class="cn">false</span> =&gt; Tr t</a>
-<a class="sourceLine" id="cb3-5" title="5"></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="kw">infixr</span>:<span class="dv">55</span> <span class="st">&quot; &lt;&gt; &quot;</span> =&gt; Br</a>
-<a class="sourceLine" id="cb3-7" title="7"></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">-- i&#39;m defining `Br` rather than using the general dependent pair type</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">-- `Sigma` in order to give a `toString` instance.</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="kw">instance</span><span class="fu"> </span>[ToString (Tr s)] [ToString (Tr t)] : ToString (Br s t) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-11" title="11">  toString | ⟨<span class="cn">true</span>, tr⟩ =&gt; s!<span class="st">&quot;⟨true, {tr}⟩&quot;</span></a>
-<a class="sourceLine" id="cb3-12" title="12">           | ⟨<span class="cn">false</span>, tr⟩ =&gt; s!<span class="st">&quot;⟨false, {tr}⟩&quot;</span></a></code></pre></div>
-<p>The following examples show how this type can be used to capture the shape of traces generated by the previous example. The branch itself (<code>&lt;&gt;</code>) introduces a <code>Bool</code> value into the trace, corresponding to the first coin flip. When this comes up heads (<code>true</code>) we take the left branch, which demands we give a second <code>Bool</code>; the result of the second coin flip. When the first flip comes up tails (<code>false</code>), we take the right branch, which is empty.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">example</span> : [Bool] &lt;&gt; [] := ⟨<span class="cn">true</span> , (<span class="cn">true</span>, ())⟩</a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="kw">example</span> : [Bool] &lt;&gt; [] := ⟨<span class="cn">true</span> , (<span class="cn">false</span>, ())⟩</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw">example</span> : [Bool] &lt;&gt; [] := ⟨<span class="cn">false</span>, ()⟩</a></code></pre></div>
-<p>When the primitive types within a trace take on finitely many values, then so does the trace itself, as witnessed by this typeclass:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">class</span><span class="fu"> Finite </span>(a : <span class="bu">Type</span>) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-2" title="2">  enumerate : List a</a>
-<a class="sourceLine" id="cb5-3" title="3"></a>
-<a class="sourceLine" id="cb5-4" title="4"><span class="kw">instance</span><span class="fu"> </span>: Finite Bool <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-5" title="5">  enumerate := [<span class="cn">true</span>, <span class="cn">false</span>]</a>
-<a class="sourceLine" id="cb5-6" title="6"></a>
-<a class="sourceLine" id="cb5-7" title="7"><span class="kw">instance</span><span class="fu"> </span>: Finite Unit <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-8" title="8">  enumerate := [()]</a>
-<a class="sourceLine" id="cb5-9" title="9"></a>
-<a class="sourceLine" id="cb5-10" title="10"><span class="kw">def</span><span class="fu"> product </span>(xs : List a) (ys : List b) : List (a × b) :=</a>
-<a class="sourceLine" id="cb5-11" title="11">  xs.flatMap <span class="kw">fun</span> x =&gt; ys.map <span class="kw">fun</span> y =&gt; (x, y)</a>
-<a class="sourceLine" id="cb5-12" title="12"></a>
-<a class="sourceLine" id="cb5-13" title="13"><span class="co">-- we need instances for nested products, which `Tr` reduces to,</span></a>
-<a class="sourceLine" id="cb5-14" title="14"><span class="co">-- rather than `Tr` itself.</span></a>
-<a class="sourceLine" id="cb5-15" title="15"><span class="kw">open</span> Finite <span class="kw">in</span></a>
-<a class="sourceLine" id="cb5-16" title="16"><span class="kw">instance</span><span class="fu"> </span>[Finite a] [Finite b] : Finite (a × b) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-17" title="17">  enumerate := product enumerate enumerate</a>
-<a class="sourceLine" id="cb5-18" title="18"></a>
-<a class="sourceLine" id="cb5-19" title="19"><span class="kw">open</span> Finite <span class="kw">in</span></a>
-<a class="sourceLine" id="cb5-20" title="20"><span class="kw">instance</span><span class="fu"> </span>[Finite (Tr s)] [Finite (Tr t)] : Finite (s &lt;&gt; t) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb5-21" title="21">  enumerate := enumerate.map (⟨<span class="cn">true</span>, ·⟩) ++ enumerate.map (⟨<span class="cn">false</span>, ·⟩)</a></code></pre></div>
-<p>This shows (without proof) that the three values given in the previous examples are the only values that inhabit <code>[Bool] &lt;&gt; []</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">example</span> : (Finite.enumerate : List ([Bool] &lt;&gt; [])) =</a>
-<a class="sourceLine" id="cb6-2" title="2">        [⟨<span class="cn">true</span>,  (<span class="cn">true</span>,  ())⟩,</a>
-<a class="sourceLine" id="cb6-3" title="3">         ⟨<span class="cn">true</span>,  (<span class="cn">false</span>, ())⟩,</a>
-<a class="sourceLine" id="cb6-4" title="4">         ⟨<span class="cn">false</span>, ()⟩]</a>
-<a class="sourceLine" id="cb6-5" title="5">        := <span class="kw">rfl</span></a></code></pre></div>
-<h1 id="syntax">Syntax</h1>
-<p>I’m using a variation on the <a href="https://okmij.org/ftp/Computation/free-monad.html#freer">Freer monad</a> to represent the syntax of probabilistic programs. Since I’m not concerned with re-use right now, I hard-code this Freer-like structure to use one particular set of primitive operations.</p>
-<p>The operations are the aforementioned <code>flip</code> and <code>factor</code>, plus a branching operation <code>cond</code> to introduce the trace branching structure described above.</p>
-<p>Under the sampling semantics, <code>cond p q</code> flips a fair coin and uses the result to choose whether to sample from program <code>p</code> or <code>q</code>. (Similar to Lean’s built-in <code>cond : Bool -&gt; a -&gt; a -&gt; a</code>.) While <code>p</code> and <code>q</code> must have a common return type, they can have different trace types. This can’t be implemented with <code>if</code>, since it would require <code>p</code> and <code>q</code> to also have the same trace type.</p>
-<p>With Freer, the datatype for operations typically records the type of any arguments as well as the return type of the operation. Here, <code>Op</code> is extended to also (optionally) record the type of the value that the operation extends the trace with. e.g. <code>flip</code> extends the trace with a <code>Bool</code>, and <code>factor</code> does not extend the trace.</p>
-<p>Similarly, <code>P</code> is extended to record the type of the trace associated with the program. In particular, <code>pure</code> (aka <code>return</code>) produces an empty trace, and the <code>step</code> constructor, which extends a program with an operation, simply extends the trace with the type indicated by the operation, if present.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">def</span><span class="fu"> optcons </span>: Option a -&gt; List a -&gt; List a</a>
-<a class="sourceLine" id="cb7-2" title="2">  | .none, xs =&gt; xs</a>
-<a class="sourceLine" id="cb7-3" title="3">  | .some x, xs =&gt; x :: xs</a>
-<a class="sourceLine" id="cb7-4" title="4"></a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="kw">infixr</span>:<span class="dv">55</span> <span class="st">&quot; :? &quot;</span> =&gt; optcons</a>
-<a class="sourceLine" id="cb7-6" title="6"></a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="kw">mutual</span></a>
-<a class="sourceLine" id="cb7-8" title="8"></a>
-<a class="sourceLine" id="cb7-9" title="9">  <span class="co">-- primitive operations</span></a>
-<a class="sourceLine" id="cb7-10" title="10">  <span class="kw">inductive</span><span class="fu"> Op </span>: <span class="bu">Type</span> -&gt; Option <span class="bu">Type</span> -&gt; <span class="bu">Type</span> <span class="dv">1</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-11" title="11">    | flip : Float -&gt; Op Bool (.some Bool)</a>
-<a class="sourceLine" id="cb7-12" title="12">    | factor : Float -&gt; Op Unit .none</a>
-<a class="sourceLine" id="cb7-13" title="13">    | cond : P s a -&gt; P t a -&gt; Op a (.some (s &lt;&gt; t))</a>
-<a class="sourceLine" id="cb7-14" title="14"></a>
-<a class="sourceLine" id="cb7-15" title="15">  <span class="co">-- Freer-like structure</span></a>
-<a class="sourceLine" id="cb7-16" title="16">  <span class="kw">inductive</span><span class="fu"> P </span>: List <span class="bu">Type</span> -&gt; <span class="bu">Type</span> -&gt; <span class="bu">Type</span> <span class="dv">1</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb7-17" title="17">    | pure : a -&gt; P [] a</a>
-<a class="sourceLine" id="cb7-18" title="18">    | step : Op a t -&gt; (a -&gt; P ts b) -&gt; P (t :? ts) b</a>
-<a class="sourceLine" id="cb7-19" title="19"></a>
-<a class="sourceLine" id="cb7-20" title="20"><span class="kw">end</span></a></code></pre></div>
-<p>We can make probabilistic programs for each of the primitive operations:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">def</span><span class="fu"> P.flip </span>(pr : Float) : P [Bool] Bool :=</a>
-<a class="sourceLine" id="cb8-2" title="2">  step (.flip pr) pure</a>
-<a class="sourceLine" id="cb8-3" title="3"></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="kw">def</span><span class="fu"> P.factor </span>(pr : Float) : P [] Unit :=</a>
-<a class="sourceLine" id="cb8-5" title="5">  step (.factor pr) pure</a>
-<a class="sourceLine" id="cb8-6" title="6"></a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="kw">def</span><span class="fu"> P.cond </span>(p : P s a) (q : P t a) : P [s &lt;&gt; t] a :=</a>
-<a class="sourceLine" id="cb8-8" title="8">  step (.cond p q) pure</a></code></pre></div>
-<p>The presence of an additional type index means <code>P</code> can’t be a <code>Monad</code><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. However, we can still give a sensible definition of <code>bind</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">theorem</span><span class="fu"> optcons_append </span>: s :? (t ++ u) = (s :? t) ++ u :=</a>
-<a class="sourceLine" id="cb9-2" title="2">    <span class="kw">by</span> <span class="kw">cases</span> s; <span class="kw">unfold</span> optcons; <span class="kw">rfl</span>; <span class="kw">rfl</span></a>
-<a class="sourceLine" id="cb9-3" title="3"></a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="kw">def</span><span class="fu"> P.bind </span>: P s a -&gt; (a -&gt; P t b) -&gt; P (s ++ t) b</a>
-<a class="sourceLine" id="cb9-5" title="5">  | pure x, k =&gt; k x</a>
-<a class="sourceLine" id="cb9-6" title="6">  | step op k, k&#39; =&gt;</a>
-<a class="sourceLine" id="cb9-7" title="7">     <span class="co">-- cast `P (s :? (t ++ u)) a` to `P ((s :? t) ++ u) a`</span></a>
-<a class="sourceLine" id="cb9-8" title="8">     congrArg (P . _) optcons_append ▸</a>
-<a class="sourceLine" id="cb9-9" title="9">     step op <span class="kw">fun</span> x =&gt; (k x).bind k&#39;</a></code></pre></div>
-<p>The implementation here is identical to the implementation of <code>bind</code> for Freer; only the types differ.</p>
-<p>We now have enough machinery to be able to write down some probabilistic programs<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. Here’s a simple medical diagnosis example<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">open</span> P <span class="kw">in</span></a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="kw">def</span><span class="fu"> medical </span>: P [Bool, Bool] Bool :=</a>
-<a class="sourceLine" id="cb10-3" title="3">  flip <span class="fl">0.01</span> |&gt;.bind λ hasDisease =&gt;</a>
-<a class="sourceLine" id="cb10-4" title="4">  <span class="kw">let</span> testProb := <span class="cf">if</span> hasDisease <span class="cf">then</span> <span class="fl">0.8</span> <span class="cf">else</span> <span class="fl">0.096</span></a>
-<a class="sourceLine" id="cb10-5" title="5">  flip testProb |&gt;.bind λ testResult =&gt;</a>
-<a class="sourceLine" id="cb10-6" title="6">  pure hasDisease</a></code></pre></div>
-<h1 id="interpreters">Interpreters</h1>
-<p>In this section I implement several interpreters for probabilistic programs.</p>
-<p>The first produces a stochastic procedure that samples traces from the distribution described by the program. This is implemented as a state monad that maintains the state of a random number generator. <code>factor</code> is interpreted as weighting the generated samples, which is tracked by stacking a second state monad.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">abbrev</span><span class="fu"> SampW </span>:= StateT Float (StateM StdGen)</a>
-<a class="sourceLine" id="cb11-2" title="2"></a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="co">-- sample a value in [0,1) (in base monad)</span></a>
-<a class="sourceLine" id="cb11-4" title="4"><span class="kw">def</span><span class="fu"> _uniform </span>: StateM StdGen Float := <span class="kw">fun</span> g =&gt;</a>
-<a class="sourceLine" id="cb11-5" title="5">  <span class="kw">let</span> N := stdRange.snd</a>
-<a class="sourceLine" id="cb11-6" title="6">  <span class="kw">let</span> (n, g&#39;) := stdNext g</a>
-<a class="sourceLine" id="cb11-7" title="7">  ((n-<span class="dv">1</span>).toFloat / N.toFloat, g&#39;)</a>
-<a class="sourceLine" id="cb11-8" title="8"></a>
-<a class="sourceLine" id="cb11-9" title="9"><span class="co">-- lift `_uniform` into transformer stack. (there might be a more</span></a>
-<a class="sourceLine" id="cb11-10" title="10"><span class="co">-- idiomatic way to do this?)</span></a>
-<a class="sourceLine" id="cb11-11" title="11"><span class="kw">def</span><span class="fu"> SampW.uniform </span>: SampW Float := _uniform</a>
-<a class="sourceLine" id="cb11-12" title="12"></a>
-<a class="sourceLine" id="cb11-13" title="13"><span class="kw">def</span><span class="fu"> SampW.flip </span>(pr : Float) : SampW Bool :=</a>
-<a class="sourceLine" id="cb11-14" title="14">  <span class="cf">return</span> (&lt;- uniform) &lt; pr</a>
-<a class="sourceLine" id="cb11-15" title="15"></a>
-<a class="sourceLine" id="cb11-16" title="16"><span class="kw">def</span><span class="fu"> SampW.weight </span>(pr : Float) : SampW Unit :=</a>
-<a class="sourceLine" id="cb11-17" title="17">  .modifyGet λ w =&gt; ((), w + .log pr)</a>
-<a class="sourceLine" id="cb11-18" title="18"></a>
-<a class="sourceLine" id="cb11-19" title="19"><span class="co">-- run a monadic computation multiple times, collecting the results in</span></a>
-<a class="sourceLine" id="cb11-20" title="20"><span class="co">-- a list</span></a>
-<a class="sourceLine" id="cb11-21" title="21"><span class="kw">def</span><span class="fu"> replicate </span>[Monad m] : Nat -&gt; m a -&gt; m (List a)</a>
-<a class="sourceLine" id="cb11-22" title="22">  | <span class="dv">0</span>, _ =&gt; <span class="cf">return</span> []</a>
-<a class="sourceLine" id="cb11-23" title="23">  | i+<span class="dv">1</span>, act =&gt; <span class="cf">return</span> (&lt;- act) :: (&lt;- replicate i act)</a>
-<a class="sourceLine" id="cb11-24" title="24"></a>
-<a class="sourceLine" id="cb11-25" title="25"><span class="co">-- run a sampler once, and throw out the weight</span></a>
-<a class="sourceLine" id="cb11-26" title="26"><span class="kw">def</span><span class="fu"> SampW.run1 </span>(seed : Nat) (m : SampW a) : a :=</a>
-<a class="sourceLine" id="cb11-27" title="27">  m |&gt; (StateT.run&#39; · <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb11-28" title="28">    |&gt; (StateT.run&#39; · (mkStdGen seed))</a>
-<a class="sourceLine" id="cb11-29" title="29">    |&gt; Id.run</a>
-<a class="sourceLine" id="cb11-30" title="30"></a>
-<a class="sourceLine" id="cb11-31" title="31"><span class="co">-- run a sampler `n` times, returning `n` weighted samples</span></a>
-<a class="sourceLine" id="cb11-32" title="32"><span class="kw">def</span><span class="fu"> SampW.run </span>(seed : Nat) (n : Nat) (m : SampW a) : List (a × Float) :=</a>
-<a class="sourceLine" id="cb11-33" title="33">  m |&gt; (StateT.run · <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb11-34" title="34">    |&gt; replicate n</a>
-<a class="sourceLine" id="cb11-35" title="35">    |&gt; (StateT.run&#39; · (mkStdGen seed))</a>
-<a class="sourceLine" id="cb11-36" title="36">    |&gt; Id.run</a></code></pre></div>
-<p>With that we can implement the sampler. In order to implement this compositonally we need the sampler to generate return values as well as traces. Something similar crops up in most (perhaps all) of the interpreters we implement.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">def</span><span class="fu"> P.sampler&#39; </span>: P t a -&gt; SampW (a × Tr t)</a>
-<a class="sourceLine" id="cb12-2" title="2">  | pure x =&gt; <span class="cf">return</span> (x, ())</a>
-<a class="sourceLine" id="cb12-3" title="3">  | step (.flip pr) k =&gt; <span class="cf">do</span></a>
-<a class="sourceLine" id="cb12-4" title="4">         <span class="kw">let</span> b &lt;- .flip pr</a>
-<a class="sourceLine" id="cb12-5" title="5">         <span class="kw">let</span> (x, tr) &lt;- sampler&#39; (k b)</a>
-<a class="sourceLine" id="cb12-6" title="6">         <span class="cf">return</span> (x, (b, tr))</a>
-<a class="sourceLine" id="cb12-7" title="7">  | step (.factor pr) k =&gt; <span class="cf">do</span></a>
-<a class="sourceLine" id="cb12-8" title="8">         .weight pr</a>
-<a class="sourceLine" id="cb12-9" title="9">         sampler&#39; (k ())</a>
-<a class="sourceLine" id="cb12-10" title="10">  | step (.cond p q) k =&gt; <span class="cf">do</span></a>
-<a class="sourceLine" id="cb12-11" title="11">         <span class="co">-- sample a bool to determine branch to follow</span></a>
-<a class="sourceLine" id="cb12-12" title="12">         <span class="kw">let</span> b &lt;- .flip <span class="fl">0.5</span></a>
-<a class="sourceLine" id="cb12-13" title="13">         <span class="cf">match</span> b <span class="kw">with</span></a>
-<a class="sourceLine" id="cb12-14" title="14">         <span class="co">-- run left branch, the the rest of the program</span></a>
-<a class="sourceLine" id="cb12-15" title="15">         | <span class="cn">true</span> =&gt; <span class="kw">let</span> (x, tr) &lt;- sampler&#39; p</a>
-<a class="sourceLine" id="cb12-16" title="16">                   <span class="kw">let</span> (y, tr&#39;) &lt;- sampler&#39; (k x)</a>
-<a class="sourceLine" id="cb12-17" title="17">                   <span class="cf">return</span> (y, (⟨<span class="cn">true</span>, tr⟩, tr&#39;))</a>
-<a class="sourceLine" id="cb12-18" title="18">         <span class="co">-- run left branch, the the rest of the program</span></a>
-<a class="sourceLine" id="cb12-19" title="19">         | <span class="cn">false</span> =&gt; <span class="kw">let</span> (x, tr) &lt;- sampler&#39; q</a>
-<a class="sourceLine" id="cb12-20" title="20">                    <span class="kw">let</span> (y, tr&#39;) &lt;- sampler&#39; (k x)</a>
-<a class="sourceLine" id="cb12-21" title="21">                    <span class="cf">return</span> (y, (⟨<span class="cn">false</span>, tr⟩, tr&#39;))</a>
-<a class="sourceLine" id="cb12-22" title="22"></a>
-<a class="sourceLine" id="cb12-23" title="23"><span class="co">-- a variant that drops the return value, leaving just the trace</span></a>
-<a class="sourceLine" id="cb12-24" title="24"><span class="kw">def</span><span class="fu"> P.sampler </span>(p : P t a) : SampW (Tr t) :=</a>
-<a class="sourceLine" id="cb12-25" title="25">  <span class="cf">do</span> <span class="kw">let</span> (_, tr) &lt;- p.sampler&#39;; <span class="cf">return</span> tr</a></code></pre></div>
-<p>A second interpreter produces the density function for the distribution over traces.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">def</span><span class="fu"> bernoulliDensity </span>(pr : Float) : Bool -&gt; Float</a>
-<a class="sourceLine" id="cb13-2" title="2">  | <span class="cn">true</span> =&gt; pr | <span class="cn">false</span> =&gt; <span class="dv">1</span> - pr</a>
-<a class="sourceLine" id="cb13-3" title="3"></a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="kw">def</span><span class="fu"> P.density&#39; </span>: P t a -&gt; Tr t -&gt; (a × Float)</a>
-<a class="sourceLine" id="cb13-5" title="5">  | pure x, () =&gt; (x, <span class="fl">1.0</span>)</a>
-<a class="sourceLine" id="cb13-6" title="6">  | step (.flip pr) k, (x, tr) =&gt;</a>
-<a class="sourceLine" id="cb13-7" title="7">          <span class="kw">let</span> (y, pr&#39;) := density&#39; (k x) tr</a>
-<a class="sourceLine" id="cb13-8" title="8">          <span class="co">-- probability of drawing `x` from a Bernoulli * density of</span></a>
-<a class="sourceLine" id="cb13-9" title="9">          <span class="co">-- rest of program</span></a>
-<a class="sourceLine" id="cb13-10" title="10">          (y, bernoulliDensity pr x * pr&#39;)</a>
-<a class="sourceLine" id="cb13-11" title="11">  | step (.factor pr) k, tr =&gt;</a>
-<a class="sourceLine" id="cb13-12" title="12">         <span class="kw">let</span> (x, pr&#39;) := density&#39; (k ()) tr</a>
-<a class="sourceLine" id="cb13-13" title="13">         (x, pr * pr&#39;)</a>
-<a class="sourceLine" id="cb13-14" title="14">  | step (.cond p q) k, (⟨b, tr⟩, tr&#39;) =&gt;</a>
-<a class="sourceLine" id="cb13-15" title="15">         <span class="co">-- compute the density of the appropriate branch, given the</span></a>
-<a class="sourceLine" id="cb13-16" title="16">         <span class="co">-- bool in the trace</span></a>
-<a class="sourceLine" id="cb13-17" title="17">         <span class="kw">let</span> (x, pr) := <span class="cf">match</span> b <span class="kw">with</span></a>
-<a class="sourceLine" id="cb13-18" title="18">         | <span class="cn">true</span> =&gt; density&#39; p tr</a>
-<a class="sourceLine" id="cb13-19" title="19">         | <span class="cn">false</span> =&gt; density&#39; q tr</a>
-<a class="sourceLine" id="cb13-20" title="20">         <span class="co">-- compute the density of the rest of the program</span></a>
-<a class="sourceLine" id="cb13-21" title="21">         <span class="kw">let</span> (y, pr&#39;) := density&#39; (k x) tr&#39;</a>
-<a class="sourceLine" id="cb13-22" title="22">         (y, <span class="fl">0.5</span> * pr * pr&#39;)</a>
-<a class="sourceLine" id="cb13-23" title="23"></a>
-<a class="sourceLine" id="cb13-24" title="24"><span class="kw">def</span><span class="fu"> P.density </span>(p : P t a) (tr : Tr t) : Float :=</a>
-<a class="sourceLine" id="cb13-25" title="25">  p.density&#39; tr |&gt;.snd</a></code></pre></div>
-<p>Finally, we can also interpet a probabilistic program as a function from traces to return values.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">def</span><span class="fu"> P.retval </span>: P t a -&gt; Tr t -&gt; a</a>
-<a class="sourceLine" id="cb14-2" title="2">  | pure x, () =&gt; x</a>
-<a class="sourceLine" id="cb14-3" title="3">  | step (.flip _) k, (x, tr) =&gt; retval (k x) tr</a>
-<a class="sourceLine" id="cb14-4" title="4">  | step (.factor _) k, tr =&gt; retval (k ()) tr</a>
-<a class="sourceLine" id="cb14-5" title="5">  | step (.cond p q) k, (⟨b, tr⟩, tr&#39;) =&gt;</a>
-<a class="sourceLine" id="cb14-6" title="6">         <span class="kw">let</span> x := <span class="cf">match</span> b <span class="kw">with</span> | <span class="cn">true</span> =&gt; retval p tr | <span class="cn">false</span> =&gt; retval q tr</a>
-<a class="sourceLine" id="cb14-7" title="7">         retval (k x) tr&#39;</a></code></pre></div>
-<h1 id="observing-data">Observing Data</h1>
-<p>When performing Bayesian inference we typically want to “condition” the model on observed data.</p>
-<p>A direct approach to this is to incorporate the observed data into the model itself. Intuitively, to observe the result of a <code>flip</code>, we want to replace the <code>flip</code> with a <code>factor</code> statement that weights the execution by the probability of the observed value.</p>
+<div id="preamble" class="status">
+<a href="/">Home</a>
+</div>
+<div id="content" class="content">
+<h1 class="title">Probabilistic Programming with Typed Traces in
+Lean</h1>
+<p><i>June 2025</i></p>
+<h2 id="introduction">Introduction</h2>
+<p>I’ve been experimenting with implementing ideas from probabilistic
+programming in a dependently typed language. This article documents one
+particular path I’ve explored in Lean.</p>
+<p>In particular, it describes a DSL in which a probabilistic program’s
+sample space is reflected in its type, and then uses this language to
+express some very simple models and inference algorithms.</p>
+<h2 id="background">Background</h2>
+<p>I’m interested in probabilistic programming languages for Bayesian
+inference. In this setting, a probabilistic program is written to
+describe a probabilistic model (assumed to describe some process of
+interest), data generated by the process are combined with the model as
+“observations”, then (approximate) inference is performed to obtained
+posterior beliefs.</p>
+<p>In this work, a probabilistic program is a regular functional program
+augmented with an effectful <code>flip</code> operation, taking a
+success probability as argument and returning a <code>Bool</code>.</p>
+<p>Intuitively, we interpret such a program as a stochastic procedure
+that draws samples from a Bernoulli distribution at <code>flip</code>
+statements, and accumulates these sampled values in a data structure
+called a “trace”. More generally, a probabilistic program can be thought
+of as representing a probability distribution over such traces. We can
+write interpreters to e.g. sample from this distribution, or compute the
+probability density of a trace under the distribution, etc.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>Here, probabilistic programs also have a <code>factor</code>
+operation, which is used to weight to samples from the program. This is
+the basic mechanism on which the ability to incorporate observed data is
+built.</p>
+<p>Inference procedures can be built compositionally from the parts just
+described. My focus here is on the use of types to help ensure the
+correctness of such compositions.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span><span class="im"> Lean.Data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">set_option</span> autoImplicit <span class="cn">true</span></span></code></pre></div>
+<h2 id="traces">Traces</h2>
+<p>I’m primarily interested in statically describing the possible shapes
+that the trace generated by a given probabilistic program can take.
+(Equivalently, the support of the probability distribution over traces.)
+When performing inference for a probabilistic program, we often have to
+give an auxilliary probabilistic program (proposal, guide, etc.), and
+these two programs need to be compatible in some sense. Often this is
+checked at run-time, but here I’m trying to do this statically with
+types.</p>
+<p>Intuitively, a program that flips two coins might generate a trace
+with type something like <code>Vec Bool 2</code>, capturing both the
+number of random choices made and their types.</p>
+<p>More generally, a program might sample from primitive distributions
+of differing types, so we’ll use heterogeneous lists as the basis of the
+trace representation.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- typically called `HList`, but i&#39;m calling it `Tr` to be suggestive</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- of &quot;trace&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">abbrev</span><span class="fu"> Tr </span>: List <span class="bu">Type</span> -&gt; <span class="bu">Type</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  | [] =&gt; Unit</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  | t::ts =&gt; t × Tr ts</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : Tr [Bool, Bool] := (<span class="cn">true</span>, <span class="cn">false</span>, ())</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : Tr [Float, Bool] := (<span class="fl">0.0</span>, <span class="cn">false</span>, ())</span></code></pre></div>
+<p>One of the appeals of probabilistic programs is that they can
+describe complex distributions with structural choices. For example, a
+program might first flip a coin, and then flip a second coin only if the
+first came up heads. I accomodate this with the following type:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- a branching structure</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">structure</span><span class="fu"> Br </span>(s t : List <span class="bu">Type</span>) <span class="kw">where</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  val : Bool</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  sub : <span class="cf">match</span> val <span class="kw">with</span> | <span class="cn">true</span> =&gt; Tr s | <span class="cn">false</span> =&gt; Tr t</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">infixr</span>:<span class="dv">55</span> <span class="st">&quot; &lt;&gt; &quot;</span> =&gt; Br</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- i&#39;m defining `Br` rather than using the general dependent pair type</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- `Sigma` in order to give a `toString` instance.</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span><span class="fu"> </span>[ToString (Tr s)] [ToString (Tr t)] : ToString (Br s t) <span class="kw">where</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  toString | ⟨<span class="cn">true</span>, tr⟩ =&gt; s!<span class="st">&quot;⟨true, {tr}⟩&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>           | ⟨<span class="cn">false</span>, tr⟩ =&gt; s!<span class="st">&quot;⟨false, {tr}⟩&quot;</span></span></code></pre></div>
+<p>The following examples show how this type can be used to capture the
+shape of traces generated by the previous example. The branch itself
+(<code>&lt;&gt;</code>) introduces a <code>Bool</code> value into the
+trace, corresponding to the first coin flip. When this comes up heads
+(<code>true</code>) we take the left branch, which demands we give a
+second <code>Bool</code>; the result of the second coin flip. When the
+first flip comes up tails (<code>false</code>), we take the right
+branch, which is empty.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : [Bool] &lt;&gt; [] := ⟨<span class="cn">true</span> , (<span class="cn">true</span>, ())⟩</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : [Bool] &lt;&gt; [] := ⟨<span class="cn">true</span> , (<span class="cn">false</span>, ())⟩</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : [Bool] &lt;&gt; [] := ⟨<span class="cn">false</span>, ()⟩</span></code></pre></div>
+<p>When the primitive types within a trace take on finitely many values,
+then so does the trace itself, as witnessed by this typeclass:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span><span class="fu"> Finite </span>(a : <span class="bu">Type</span>) <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  enumerate : List a</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span><span class="fu"> </span>: Finite Bool <span class="kw">where</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  enumerate := [<span class="cn">true</span>, <span class="cn">false</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span><span class="fu"> </span>: Finite Unit <span class="kw">where</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  enumerate := [()]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> product </span>(xs : List a) (ys : List b) : List (a × b) :=</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  xs.flatMap <span class="kw">fun</span> x =&gt; ys.map <span class="kw">fun</span> y =&gt; (x, y)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- we need instances for nested products, which `Tr` reduces to,</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">-- rather than `Tr` itself.</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">open</span> Finite <span class="kw">in</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span><span class="fu"> </span>[Finite a] [Finite b] : Finite (a × b) <span class="kw">where</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  enumerate := product enumerate enumerate</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">open</span> Finite <span class="kw">in</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span><span class="fu"> </span>[Finite (Tr s)] [Finite (Tr t)] : Finite (s &lt;&gt; t) <span class="kw">where</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  enumerate := enumerate.map (⟨<span class="cn">true</span>, ·⟩) ++ enumerate.map (⟨<span class="cn">false</span>, ·⟩)</span></code></pre></div>
+<p>This shows (without proof) that the three values given in the
+previous examples are the only values that inhabit
+<code>[Bool] &lt;&gt; []</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : (Finite.enumerate : List ([Bool] &lt;&gt; [])) =</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>        [⟨<span class="cn">true</span>,  (<span class="cn">true</span>,  ())⟩,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>         ⟨<span class="cn">true</span>,  (<span class="cn">false</span>, ())⟩,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>         ⟨<span class="cn">false</span>, ()⟩]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        := <span class="kw">rfl</span></span></code></pre></div>
+<h2 id="syntax">Syntax</h2>
+<p>I’m using a variation on the <a href="https://okmij.org/ftp/Computation/free-monad.html#freer">Freer
+monad</a> to represent the syntax of probabilistic programs. Since I’m
+not concerned with re-use right now, I hard-code this Freer-like
+structure to use one particular set of primitive operations.</p>
+<p>The operations are the aforementioned <code>flip</code> and
+<code>factor</code>, plus a branching operation <code>cond</code> to
+introduce the trace branching structure described above.</p>
+<p>Under the sampling semantics, <code>cond p q</code> flips a fair coin
+and uses the result to choose whether to sample from program
+<code>p</code> or <code>q</code>. (Similar to Lean’s built-in
+<code>cond : Bool -&gt; a -&gt; a -&gt; a</code>.) While <code>p</code>
+and <code>q</code> must have a common return type, they can have
+different trace types. This can’t be implemented with <code>if</code>,
+since it would require <code>p</code> and <code>q</code> to also have
+the same trace type.</p>
+<p>With Freer, the datatype for operations typically records the type of
+any arguments as well as the return type of the operation. Here,
+<code>Op</code> is extended to also (optionally) record the type of the
+value that the operation extends the trace with. e.g. <code>flip</code>
+extends the trace with a <code>Bool</code>, and <code>factor</code> does
+not extend the trace.</p>
+<p>Similarly, <code>P</code> is extended to record the type of the trace
+associated with the program. In particular, <code>pure</code> (aka
+<code>return</code>) produces an empty trace, and the <code>step</code>
+constructor, which extends a program with an operation, simply extends
+the trace with the type indicated by the operation, if present.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> optcons </span>: Option a -&gt; List a -&gt; List a</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  | .none, xs =&gt; xs</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  | .some x, xs =&gt; x :: xs</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">infixr</span>:<span class="dv">55</span> <span class="st">&quot; :? &quot;</span> =&gt; optcons</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">mutual</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- primitive operations</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inductive</span><span class="fu"> Op </span>: <span class="bu">Type</span> -&gt; Option <span class="bu">Type</span> -&gt; <span class="bu">Type</span> <span class="dv">1</span> <span class="kw">where</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    | flip : Float -&gt; Op Bool (.some Bool)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    | factor : Float -&gt; Op Unit .none</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    | cond : P s a -&gt; P t a -&gt; Op a (.some (s &lt;&gt; t))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Freer-like structure</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">inductive</span><span class="fu"> P </span>: List <span class="bu">Type</span> -&gt; <span class="bu">Type</span> -&gt; <span class="bu">Type</span> <span class="dv">1</span> <span class="kw">where</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    | pure : a -&gt; P [] a</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    | step : Op a t -&gt; (a -&gt; P ts b) -&gt; P (t :? ts) b</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div>
+<p>We can make probabilistic programs for each of the primitive
+operations:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.flip </span>(pr : Float) : P [Bool] Bool :=</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  step (.flip pr) pure</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.factor </span>(pr : Float) : P [] Unit :=</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  step (.factor pr) pure</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.cond </span>(p : P s a) (q : P t a) : P [s &lt;&gt; t] a :=</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  step (.cond p q) pure</span></code></pre></div>
+<p>The presence of an additional type index means <code>P</code> can’t
+be a <code>Monad</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. However, we can still give a
+sensible definition of <code>bind</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">theorem</span><span class="fu"> optcons_append </span>: s :? (t ++ u) = (s :? t) ++ u :=</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">by</span> <span class="kw">cases</span> s; <span class="kw">unfold</span> optcons; <span class="kw">rfl</span>; <span class="kw">rfl</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.bind </span>: P s a -&gt; (a -&gt; P t b) -&gt; P (s ++ t) b</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  | pure x, k =&gt; k x</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  | step op k, k&#39; =&gt;</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>     <span class="co">-- cast `P (s :? (t ++ u)) a` to `P ((s :? t) ++ u) a`</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>     congrArg (P . _) optcons_append ▸</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>     step op <span class="kw">fun</span> x =&gt; (k x).bind k&#39;</span></code></pre></div>
+<p>The implementation here is identical to the implementation of
+<code>bind</code> for Freer; only the types differ.</p>
+<p>We now have enough machinery to be able to write down some
+probabilistic programs<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. Here’s a simple medical diagnosis
+example<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">open</span> P <span class="kw">in</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> medical </span>: P [Bool, Bool] Bool :=</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  flip <span class="fl">0.01</span> |&gt;.bind λ hasDisease =&gt;</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> testProb := <span class="cf">if</span> hasDisease <span class="cf">then</span> <span class="fl">0.8</span> <span class="cf">else</span> <span class="fl">0.096</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  flip testProb |&gt;.bind λ testResult =&gt;</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  pure hasDisease</span></code></pre></div>
+<h2 id="interpreters">Interpreters</h2>
+<p>In this section I implement several interpreters for probabilistic
+programs.</p>
+<p>The first produces a stochastic procedure that samples traces from
+the distribution described by the program. This is implemented as a
+state monad that maintains the state of a random number generator.
+<code>factor</code> is interpreted as weighting the generated samples,
+which is tracked by stacking a second state monad.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">abbrev</span><span class="fu"> SampW </span>:= StateT Float (StateM StdGen)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- sample a value in [0,1) (in base monad)</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> _uniform </span>: StateM StdGen Float := <span class="kw">fun</span> g =&gt;</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> N := stdRange.snd</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (n, g&#39;) := stdNext g</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  ((n-<span class="dv">1</span>).toFloat / N.toFloat, g&#39;)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- lift `_uniform` into transformer stack. (there might be a more</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- idiomatic way to do this?)</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> SampW.uniform </span>: SampW Float := _uniform</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> SampW.flip </span>(pr : Float) : SampW Bool :=</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> (&lt;- uniform) &lt; pr</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> SampW.weight </span>(pr : Float) : SampW Unit :=</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  .modifyGet λ w =&gt; ((), w + .log pr)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co">-- run a monadic computation multiple times, collecting the results in</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co">-- a list</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> replicate </span>[Monad m] : Nat -&gt; m a -&gt; m (List a)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  | <span class="dv">0</span>, _ =&gt; <span class="cf">return</span> []</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  | i+<span class="dv">1</span>, act =&gt; <span class="cf">return</span> (&lt;- act) :: (&lt;- replicate i act)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="co">-- run a sampler once, and throw out the weight</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> SampW.run1 </span>(seed : Nat) (m : SampW a) : a :=</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  m |&gt; (StateT.run&#39; · <span class="dv">0</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    |&gt; (StateT.run&#39; · (mkStdGen seed))</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    |&gt; Id.run</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co">-- run a sampler `n` times, returning `n` weighted samples</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> SampW.run </span>(seed : Nat) (n : Nat) (m : SampW a) : List (a × Float) :=</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  m |&gt; (StateT.run · <span class="dv">0</span>)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    |&gt; replicate n</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    |&gt; (StateT.run&#39; · (mkStdGen seed))</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    |&gt; Id.run</span></code></pre></div>
+<p>With that we can implement the sampler. In order to implement this
+compositonally we need the sampler to generate return values as well as
+traces. Something similar crops up in most (perhaps all) of the
+interpreters we implement.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.sampler&#39; </span>: P t a -&gt; SampW (a × Tr t)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  | pure x =&gt; <span class="cf">return</span> (x, ())</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  | step (.flip pr) k =&gt; <span class="cf">do</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> b &lt;- .flip pr</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> (x, tr) &lt;- sampler&#39; (k b)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>         <span class="cf">return</span> (x, (b, tr))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  | step (.factor pr) k =&gt; <span class="cf">do</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         .weight pr</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>         sampler&#39; (k ())</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  | step (.cond p q) k =&gt; <span class="cf">do</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- sample a bool to determine branch to follow</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> b &lt;- .flip <span class="fl">0.5</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>         <span class="cf">match</span> b <span class="kw">with</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- run left branch, the the rest of the program</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>         | <span class="cn">true</span> =&gt; <span class="kw">let</span> (x, tr) &lt;- sampler&#39; p</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                   <span class="kw">let</span> (y, tr&#39;) &lt;- sampler&#39; (k x)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>                   <span class="cf">return</span> (y, (⟨<span class="cn">true</span>, tr⟩, tr&#39;))</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- run left branch, the the rest of the program</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>         | <span class="cn">false</span> =&gt; <span class="kw">let</span> (x, tr) &lt;- sampler&#39; q</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> (y, tr&#39;) &lt;- sampler&#39; (k x)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> (y, (⟨<span class="cn">false</span>, tr⟩, tr&#39;))</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">-- a variant that drops the return value, leaving just the trace</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.sampler </span>(p : P t a) : SampW (Tr t) :=</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span> <span class="kw">let</span> (_, tr) &lt;- p.sampler&#39;; <span class="cf">return</span> tr</span></code></pre></div>
+<p>A second interpreter produces the density function for the
+distribution over traces.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> bernoulliDensity </span>(pr : Float) : Bool -&gt; Float</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  | <span class="cn">true</span> =&gt; pr | <span class="cn">false</span> =&gt; <span class="dv">1</span> - pr</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.density&#39; </span>: P t a -&gt; Tr t -&gt; (a × Float)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  | pure x, () =&gt; (x, <span class="fl">1.0</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  | step (.flip pr) k, (x, tr) =&gt;</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          <span class="kw">let</span> (y, pr&#39;) := density&#39; (k x) tr</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>          <span class="co">-- probability of drawing `x` from a Bernoulli * density of</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>          <span class="co">-- rest of program</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>          (y, bernoulliDensity pr x * pr&#39;)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  | step (.factor pr) k, tr =&gt;</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> (x, pr&#39;) := density&#39; (k ()) tr</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>         (x, pr * pr&#39;)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  | step (.cond p q) k, (⟨b, tr⟩, tr&#39;) =&gt;</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- compute the density of the appropriate branch, given the</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- bool in the trace</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> (x, pr) := <span class="cf">match</span> b <span class="kw">with</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>         | <span class="cn">true</span> =&gt; density&#39; p tr</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>         | <span class="cn">false</span> =&gt; density&#39; q tr</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- compute the density of the rest of the program</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> (y, pr&#39;) := density&#39; (k x) tr&#39;</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>         (y, <span class="fl">0.5</span> * pr * pr&#39;)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.density </span>(p : P t a) (tr : Tr t) : Float :=</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  p.density&#39; tr |&gt;.snd</span></code></pre></div>
+<p>Finally, we can also interpet a probabilistic program as a function
+from traces to return values.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.retval </span>: P t a -&gt; Tr t -&gt; a</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  | pure x, () =&gt; x</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  | step (.flip _) k, (x, tr) =&gt; retval (k x) tr</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  | step (.factor _) k, tr =&gt; retval (k ()) tr</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  | step (.cond p q) k, (⟨b, tr⟩, tr&#39;) =&gt;</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> x := <span class="cf">match</span> b <span class="kw">with</span> | <span class="cn">true</span> =&gt; retval p tr | <span class="cn">false</span> =&gt; retval q tr</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>         retval (k x) tr&#39;</span></code></pre></div>
+<h2 id="observing-data">Observing Data</h2>
+<p>When performing Bayesian inference we typically want to “condition”
+the model on observed data.</p>
+<p>A direct approach to this is to incorporate the observed data into
+the model itself. Intuitively, to observe the result of a
+<code>flip</code>, we want to replace the <code>flip</code> with a
+<code>factor</code> statement that weights the execution by the
+probability of the observed value.</p>
 <p>We can capture this pattern with this program:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">def</span><span class="fu"> P.flipObs </span>(pr : Float) (val : Bool) : P [] Bool :=</a>
-<a class="sourceLine" id="cb15-2" title="2">  factor (bernoulliDensity pr val) |&gt;.bind λ () =&gt;</a>
-<a class="sourceLine" id="cb15-3" title="3">  pure val</a></code></pre></div>
-<p>For example, to add the observation that <code>testResult</code> came out <code>true</code> to the <code>medical</code> example, we can re-write it like so:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">open</span> P <span class="kw">in</span></a>
-<a class="sourceLine" id="cb16-2" title="2"><span class="kw">def</span><span class="fu"> medicalPosTest </span>: P [Bool] Bool :=</a>
-<a class="sourceLine" id="cb16-3" title="3">  flip <span class="fl">0.01</span> |&gt;.bind λ hasDisease =&gt;</a>
-<a class="sourceLine" id="cb16-4" title="4">  <span class="kw">let</span> testProb := <span class="cf">if</span> hasDisease <span class="cf">then</span> <span class="fl">0.8</span> <span class="cf">else</span> <span class="fl">0.096</span></a>
-<a class="sourceLine" id="cb16-5" title="5">  <span class="co">-- flip testProb |&gt;.bind λ testResult =&gt;</span></a>
-<a class="sourceLine" id="cb16-6" title="6">  flipObs testProb <span class="cn">true</span> |&gt;.bind λ testResult =&gt;</a>
-<a class="sourceLine" id="cb16-7" title="7">  pure hasDisease</a></code></pre></div>
-<p>This approach is straight-forward to implement, but it can be fiddly to use. For this reason, practical systems often offer some way to describe observed data (aka condition the model) without having to modify the model’s source code.</p>
-<p>One way to implement that idea here, is to implement conditioning as a program transform, applying exactly the transform we applied manually above.</p>
-<p>Knowing the type of the program’s trace allows us to ensure that only sensible observations can be made. e.g. You can’t observe a value at a non-existent <code>flip</code>, or observe anything other than a <code>Bool</code> from a <code>flip</code>.</p>
-<p>In particular, to make an observation one has to give a (type-safe) index into the program’s trace to indicate which choice is being observed, and an observed value of the corresponding type. The result is a program in which the observed choice no longer appears in the trace type.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb17-1" title="1"><span class="co">-- remove an element from a list by index</span></a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="kw">def</span><span class="fu"> wo </span>: (xs : List a) -&gt; Fin xs.length -&gt; List a</a>
-<a class="sourceLine" id="cb17-3" title="3">  | _ :: xs, ⟨<span class="dv">0</span>, _⟩ =&gt; xs</a>
-<a class="sourceLine" id="cb17-4" title="4">  | x :: xs, ⟨i+<span class="dv">1</span>, h⟩ =&gt; x :: wo xs ⟨i, <span class="kw">by</span> <span class="kw">simp</span> <span class="kw">at</span> h; <span class="kw">exact</span> h⟩</a>
-<a class="sourceLine" id="cb17-5" title="5"></a>
-<a class="sourceLine" id="cb17-6" title="6"><span class="kw">example</span> : wo [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>] ⟨<span class="dv">1</span>, <span class="kw">by</span> <span class="kw">simp</span>⟩ = [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;c&quot;</span>] := <span class="kw">rfl</span></a>
-<a class="sourceLine" id="cb17-7" title="7"></a>
-<a class="sourceLine" id="cb17-8" title="8"><span class="co">-- note: we can&#39;t make an observation of a `pure` computation. the</span></a>
-<a class="sourceLine" id="cb17-9" title="9"><span class="co">-- types ensure we can skip the `pure` case altogether.</span></a>
-<a class="sourceLine" id="cb17-10" title="10"><span class="kw">def</span><span class="fu"> P.obs </span>: P t a -&gt; (i : Fin t.length) -&gt; t.get i -&gt; P (wo t i) a</a>
-<a class="sourceLine" id="cb17-11" title="11">  <span class="co">-- replace `flip` with `factor`, continue with observed value.</span></a>
-<a class="sourceLine" id="cb17-12" title="12">  <span class="co">-- (analogous to `flipObs`.)</span></a>
-<a class="sourceLine" id="cb17-13" title="13">  | step (.flip pr) k, ⟨<span class="dv">0</span>, _⟩, val =&gt;</a>
-<a class="sourceLine" id="cb17-14" title="14">         step (.factor (bernoulliDensity pr val)) <span class="kw">fun</span> () =&gt; k val</a>
-<a class="sourceLine" id="cb17-15" title="15">  <span class="co">-- skip over this `flip`, pushing observation into continuation.</span></a>
-<a class="sourceLine" id="cb17-16" title="16">  | step (.flip pr) k, ⟨i+<span class="dv">1</span>, _⟩, val =&gt;</a>
-<a class="sourceLine" id="cb17-17" title="17">         step (.flip pr) <span class="kw">fun</span> x =&gt; (k x).obs ⟨i, _⟩ val</a>
-<a class="sourceLine" id="cb17-18" title="18">  <span class="co">-- there&#39;s no value that could be observed at factor. we just need</span></a>
-<a class="sourceLine" id="cb17-19" title="19">  <span class="co">-- to push the observation into the continutation.</span></a>
-<a class="sourceLine" id="cb17-20" title="20">  | step (.factor pr) k, ⟨i, _⟩, val =&gt;</a>
-<a class="sourceLine" id="cb17-21" title="21">         step (.factor pr) <span class="kw">fun</span> () =&gt; (k ()).obs ⟨i, _⟩ val</a>
-<a class="sourceLine" id="cb17-22" title="22">  <span class="co">-- here we&#39;re observing an entire sub-trace, so we compute its</span></a>
-<a class="sourceLine" id="cb17-23" title="23">  <span class="co">-- density under the model indicated by the first value in the</span></a>
-<a class="sourceLine" id="cb17-24" title="24">  <span class="co">-- sub-trace. then replace the `cond` with `factor`, much as we did</span></a>
-<a class="sourceLine" id="cb17-25" title="25">  <span class="co">-- for `flip`.</span></a>
-<a class="sourceLine" id="cb17-26" title="26">  | step (.cond p q) k, ⟨<span class="dv">0</span>, _⟩, ⟨b, tr⟩ =&gt;</a>
-<a class="sourceLine" id="cb17-27" title="27">         <span class="kw">let</span> (x, pr) := <span class="cf">match</span> b <span class="kw">with</span></a>
-<a class="sourceLine" id="cb17-28" title="28">                        | <span class="cn">true</span> =&gt; density&#39; p tr</a>
-<a class="sourceLine" id="cb17-29" title="29">                        | <span class="cn">false</span> =&gt; density&#39; q tr</a>
-<a class="sourceLine" id="cb17-30" title="30">         step (.factor (<span class="fl">0.5</span> * pr)) <span class="kw">fun</span> () =&gt; k x</a>
-<a class="sourceLine" id="cb17-31" title="31">  <span class="co">-- keep going.</span></a>
-<a class="sourceLine" id="cb17-32" title="32">  | step (.cond p q) k, ⟨i+<span class="dv">1</span>, _⟩, val =&gt;</a>
-<a class="sourceLine" id="cb17-33" title="33">         step (.cond p q) <span class="kw">fun</span> x =&gt; (k x).obs ⟨i, _⟩ val</a></code></pre></div>
-<p>With this, we can express <code>medicalPosTest</code> without modifying or rewriting <code>medical</code> like so:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">def</span><span class="fu"> medicalPosTest&#39; </span>: P [Bool] Bool :=</a>
-<a class="sourceLine" id="cb18-2" title="2">  medical.obs ⟨<span class="dv">1</span>, <span class="kw">by</span> <span class="kw">simp</span>⟩ <span class="cn">true</span></a></code></pre></div>
-<h1 id="inference">Inference</h1>
-<h2 id="enumeration">Enumeration</h2>
-<p>As a warm-up, I’ll implement exhaustive enumeration for probabilistic programs. i.e. We’ll reify the exact distribution over traces represented by the program. This is only possible when the set of traces the program can generate is finite.</p>
-<p>This is simple to express in terms of machinery we’ve already assembled. We simply enumerate all possible traces, compute the density of each, then normalise the resulting distribution.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">def</span><span class="fu"> normalize </span>(xs : List (a × Float)) : List (a × Float) :=</a>
-<a class="sourceLine" id="cb19-2" title="2">  <span class="kw">let</span> z := xs.foldr (<span class="kw">fun</span> (_, p) p&#39; =&gt; p + p&#39;) <span class="dv">0</span></a>
-<a class="sourceLine" id="cb19-3" title="3">  xs.map <span class="kw">fun</span> (x, p) =&gt; (x, p / z)</a>
-<a class="sourceLine" id="cb19-4" title="4"></a>
-<a class="sourceLine" id="cb19-5" title="5"><span class="kw">def</span><span class="fu"> P.enumerate </span>[Finite (Tr t)] (p : P t a) : List (Tr t × Float) :=</a>
-<a class="sourceLine" id="cb19-6" title="6">  <span class="kw">let</span> support := Finite.enumerate</a>
-<a class="sourceLine" id="cb19-7" title="7">  support.map (<span class="kw">fun</span> tr =&gt; (tr, p.density tr)) |&gt; normalize</a></code></pre></div>
-<p>Here’s what the distribution on traces looks like for the <code>medical</code> and <code>medicalPosTest</code> examples.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb20-1" title="1"><span class="do">/-- info: [((true, true, ()),   0.008000),</span></a>
-<a class="sourceLine" id="cb20-2" title="2"><span class="do">           ((true, false, ()),  0.002000),</span></a>
-<a class="sourceLine" id="cb20-3" title="3"><span class="do">           ((false, true, ()),  0.095040),</span></a>
-<a class="sourceLine" id="cb20-4" title="4"><span class="do">           ((false, false, ()), 0.894960)] -/</span></a>
-<a class="sourceLine" id="cb20-5" title="5"><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></a>
-<a class="sourceLine" id="cb20-6" title="6"><span class="pp">#eval</span> medical.enumerate</a>
-<a class="sourceLine" id="cb20-7" title="7"></a>
-<a class="sourceLine" id="cb20-8" title="8"><span class="do">/-- info: [((true, ()),  0.077640),</span></a>
-<a class="sourceLine" id="cb20-9" title="9"><span class="do">           ((false, ()), 0.922360)] -/</span></a>
-<a class="sourceLine" id="cb20-10" title="10"><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></a>
-<a class="sourceLine" id="cb20-11" title="11"><span class="pp">#eval</span> medicalPosTest.enumerate</a></code></pre></div>
-<p>It’s sometimes convenient to think about the (marginal) distribution on program return values rather than traces. To implement this, we use the <code>retval</code> interpretation to map traces to return values<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>. Since <code>retval</code> in not injective (in general), we need a notion of equality in order to sum the probabilities of paths returning the same value.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">open</span> Lean (AssocList)</a>
-<a class="sourceLine" id="cb21-2" title="2"></a>
-<a class="sourceLine" id="cb21-3" title="3"><span class="kw">def</span><span class="fu"> update </span>[BEq a] (xs : AssocList a Float) (x : a) (pr : Float)</a>
-<a class="sourceLine" id="cb21-4" title="4">  : AssocList a Float :=</a>
-<a class="sourceLine" id="cb21-5" title="5">    <span class="cf">match</span> xs.find? x <span class="kw">with</span></a>
-<a class="sourceLine" id="cb21-6" title="6">    | .some pr&#39; =&gt; xs.replace x (pr + pr&#39;)</a>
-<a class="sourceLine" id="cb21-7" title="7">    | .none =&gt; xs.insert x pr</a>
-<a class="sourceLine" id="cb21-8" title="8"></a>
-<a class="sourceLine" id="cb21-9" title="9"><span class="kw">def</span><span class="fu"> marginalise </span>[BEq b] (f : a -&gt; b) (xs : List (a × Float))</a>
-<a class="sourceLine" id="cb21-10" title="10">  : List (b × Float) :=</a>
-<a class="sourceLine" id="cb21-11" title="11">    xs.foldr (<span class="kw">fun</span> (x, pr) ys =&gt; update ys (f x) pr) .empty |&gt;.toList</a>
-<a class="sourceLine" id="cb21-12" title="12"></a>
-<a class="sourceLine" id="cb21-13" title="13"><span class="co">-- marginal distribution on return values</span></a>
-<a class="sourceLine" id="cb21-14" title="14"><span class="kw">def</span><span class="fu"> P.marginal </span>[Finite (Tr t)] [BEq a] (p : P t a) : List (a × Float) :=</a>
-<a class="sourceLine" id="cb21-15" title="15">  p.enumerate |&gt; marginalise p.retval</a></code></pre></div>
-<p>We can use this to see how the prior probabilities on <code>hasDisease</code> compare to the posterior probabilities having observed a positive test result in the medical example:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb22-1" title="1"><span class="do">/-- info: [(true, 0.010000), (false, 0.990000)] -/</span></a>
-<a class="sourceLine" id="cb22-2" title="2"><span class="pp">#guard_msgs</span> <span class="kw">in</span></a>
-<a class="sourceLine" id="cb22-3" title="3"><span class="pp">#eval</span> medical.marginal</a>
-<a class="sourceLine" id="cb22-4" title="4"></a>
-<a class="sourceLine" id="cb22-5" title="5"><span class="do">/-- info: [(true, 0.077640), (false, 0.922360)] -/</span></a>
-<a class="sourceLine" id="cb22-6" title="6"><span class="pp">#guard_msgs</span> <span class="kw">in</span></a>
-<a class="sourceLine" id="cb22-7" title="7"><span class="pp">#eval</span> medicalPosTest&#39;.marginal</a></code></pre></div>
-<h2 id="markov-chain-monte-carlo">Markov Chain Monte Carlo</h2>
-<p>For a more interesting example we can implement MCMC inference using a version of <a href="https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm">Metropolis-Hastings</a>.</p>
-<p>The basic idea is to generate samples by performing a random walk in the space of traces. We’ll have a probabilistic program propose moves, and use the Metropolis-Hasting acceptance rule to ensure that the resulting distribution on traces coverges to the probability distribution represented by a target program.</p>
-<p>The core of the implementation is a stochastic procedure <code>mh</code> that takes a single step in such a walk. (i.e. Given the current trace, it samples the next trace in the walk.) <code>mh</code> is parameterised by target program <code>p</code> and proposal <code>q</code>. The proposal is a conditional distribution over traces, represented as a function from traces to probabilistic programs.</p>
-<p>The implementation makes use of the sampling and density interpretations. The type system ensures that the target and proposal are defined over the same space of traces<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb23-1" title="1"><span class="co">-- note: generates un-weighted samples</span></a>
-<a class="sourceLine" id="cb23-2" title="2"><span class="kw">def</span><span class="fu"> mh </span>(p : P t a) (q : Tr t -&gt; P t b) (old : Tr t) : SampW (Tr t) := <span class="cf">do</span></a>
-<a class="sourceLine" id="cb23-3" title="3">  <span class="co">-- sample from the proposal</span></a>
-<a class="sourceLine" id="cb23-4" title="4">  <span class="kw">let</span> new &lt;- (q old).sampler</a>
-<a class="sourceLine" id="cb23-5" title="5">  <span class="kw">let</span> rho := (p.density new * (q new).density old)</a>
-<a class="sourceLine" id="cb23-6" title="6">           / (p.density old * (q old).density new)</a>
-<a class="sourceLine" id="cb23-7" title="7">  <span class="kw">let</span> p := min <span class="dv">1</span> rho <span class="co">-- acceptance probability</span></a>
-<a class="sourceLine" id="cb23-8" title="8">  <span class="cf">if</span> &lt;- .flip p</a>
-<a class="sourceLine" id="cb23-9" title="9">    <span class="cf">then</span> <span class="cf">return</span> new <span class="co">-- accept</span></a>
-<a class="sourceLine" id="cb23-10" title="10">    <span class="cf">else</span> <span class="cf">return</span> old <span class="co">-- reject</span></a></code></pre></div>
-<p>As an example, we can perform MCMC (posterior) inference for the medical diagnosis program. <code>medicalPosTest</code> has a trace with type <code>[Bool]</code>, so we’ll write a proposal the negates the single <code>Bool</code> in this trace with high probability.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">def</span><span class="fu"> negateOneBool </span>: Tr [Bool] -&gt; P [Bool] Bool</a>
-<a class="sourceLine" id="cb24-2" title="2">  | (<span class="cn">true</span>, ()) =&gt; P.flip <span class="fl">0.01</span></a>
-<a class="sourceLine" id="cb24-3" title="3">  | (<span class="cn">false</span>, ()) =&gt; P.flip <span class="fl">0.99</span></a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.flipObs </span>(pr : Float) (val : Bool) : P [] Bool :=</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  factor (bernoulliDensity pr val) |&gt;.bind λ () =&gt;</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  pure val</span></code></pre></div>
+<p>For example, to add the observation that <code>testResult</code> came
+out <code>true</code> to the <code>medical</code> example, we can
+re-write it like so:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">open</span> P <span class="kw">in</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> medicalPosTest </span>: P [Bool] Bool :=</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  flip <span class="fl">0.01</span> |&gt;.bind λ hasDisease =&gt;</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> testProb := <span class="cf">if</span> hasDisease <span class="cf">then</span> <span class="fl">0.8</span> <span class="cf">else</span> <span class="fl">0.096</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- flip testProb |&gt;.bind λ testResult =&gt;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  flipObs testProb <span class="cn">true</span> |&gt;.bind λ testResult =&gt;</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  pure hasDisease</span></code></pre></div>
+<p>This approach is straight-forward to implement, but it can be fiddly
+to use. For this reason, practical systems often offer some way to
+describe observed data (aka condition the model) without having to
+modify the model’s source code.</p>
+<p>One way to implement that idea here, is to implement conditioning as
+a program transform, applying exactly the transform we applied manually
+above.</p>
+<p>Knowing the type of the program’s trace allows us to ensure that only
+sensible observations can be made. e.g. You can’t observe a value at a
+non-existent <code>flip</code>, or observe anything other than a
+<code>Bool</code> from a <code>flip</code>.</p>
+<p>In particular, to make an observation one has to give a (type-safe)
+index into the program’s trace to indicate which choice is being
+observed, and an observed value of the corresponding type. The result is
+a program in which the observed choice no longer appears in the trace
+type.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- remove an element from a list by index</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> wo </span>: (xs : List a) -&gt; Fin xs.length -&gt; List a</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  | _ :: xs, ⟨<span class="dv">0</span>, _⟩ =&gt; xs</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  | x :: xs, ⟨i+<span class="dv">1</span>, h⟩ =&gt; x :: wo xs ⟨i, <span class="kw">by</span> <span class="kw">simp</span> <span class="kw">at</span> h; <span class="kw">exact</span> h⟩</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="kw">example</span> : wo [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>] ⟨<span class="dv">1</span>, <span class="kw">by</span> <span class="kw">simp</span>⟩ = [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;c&quot;</span>] := <span class="kw">rfl</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- note: we can&#39;t make an observation of a `pure` computation. the</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- types ensure we can skip the `pure` case altogether.</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.obs </span>: P t a -&gt; (i : Fin t.length) -&gt; t.get i -&gt; P (wo t i) a</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- replace `flip` with `factor`, continue with observed value.</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (analogous to `flipObs`.)</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  | step (.flip pr) k, ⟨<span class="dv">0</span>, _⟩, val =&gt;</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>         step (.factor (bernoulliDensity pr val)) <span class="kw">fun</span> () =&gt; k val</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- skip over this `flip`, pushing observation into continuation.</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  | step (.flip pr) k, ⟨i+<span class="dv">1</span>, _⟩, val =&gt;</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>         step (.flip pr) <span class="kw">fun</span> x =&gt; (k x).obs ⟨i, _⟩ val</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- there&#39;s no value that could be observed at factor. we just need</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- to push the observation into the continutation.</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  | step (.factor pr) k, ⟨i, _⟩, val =&gt;</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>         step (.factor pr) <span class="kw">fun</span> () =&gt; (k ()).obs ⟨i, _⟩ val</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- here we&#39;re observing an entire sub-trace, so we compute its</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- density under the model indicated by the first value in the</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- sub-trace. then replace the `cond` with `factor`, much as we did</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- for `flip`.</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  | step (.cond p q) k, ⟨<span class="dv">0</span>, _⟩, ⟨b, tr⟩ =&gt;</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>         <span class="kw">let</span> (x, pr) := <span class="cf">match</span> b <span class="kw">with</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>                        | <span class="cn">true</span> =&gt; density&#39; p tr</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>                        | <span class="cn">false</span> =&gt; density&#39; q tr</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>         step (.factor (<span class="fl">0.5</span> * pr)) <span class="kw">fun</span> () =&gt; k x</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- keep going.</span></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>  | step (.cond p q) k, ⟨i+<span class="dv">1</span>, _⟩, val =&gt;</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>         step (.cond p q) <span class="kw">fun</span> x =&gt; (k x).obs ⟨i, _⟩ val</span></code></pre></div>
+<p>With this, we can express <code>medicalPosTest</code> without
+modifying or rewriting <code>medical</code> like so:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> medicalPosTest&#39; </span>: P [Bool] Bool :=</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  medical.obs ⟨<span class="dv">1</span>, <span class="kw">by</span> <span class="kw">simp</span>⟩ <span class="cn">true</span></span></code></pre></div>
+<h2 id="inference">Inference</h2>
+<h3 id="enumeration">Enumeration</h3>
+<p>As a warm-up, I’ll implement exhaustive enumeration for probabilistic
+programs. i.e. We’ll reify the exact distribution over traces
+represented by the program. This is only possible when the set of traces
+the program can generate is finite.</p>
+<p>This is simple to express in terms of machinery we’ve already
+assembled. We simply enumerate all possible traces, compute the density
+of each, then normalise the resulting distribution.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> normalize </span>(xs : List (a × Float)) : List (a × Float) :=</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> z := xs.foldr (<span class="kw">fun</span> (_, p) p&#39; =&gt; p + p&#39;) <span class="dv">0</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  xs.map <span class="kw">fun</span> (x, p) =&gt; (x, p / z)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.enumerate </span>[Finite (Tr t)] (p : P t a) : List (Tr t × Float) :=</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> support := Finite.enumerate</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  support.map (<span class="kw">fun</span> tr =&gt; (tr, p.density tr)) |&gt; normalize</span></code></pre></div>
+<p>Here’s what the distribution on traces looks like for the
+<code>medical</code> and <code>medicalPosTest</code> examples.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info: [((true, true, ()),   0.008000),</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="do">           ((true, false, ()),  0.002000),</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="do">           ((false, true, ()),  0.095040),</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="do">           ((false, false, ()), 0.894960)] -/</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> medical.enumerate</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info: [((true, ()),  0.077640),</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="do">           ((false, ()), 0.922360)] -/</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> medicalPosTest.enumerate</span></code></pre></div>
+<p>It’s sometimes convenient to think about the (marginal) distribution
+on program return values rather than traces. To implement this, we use
+the <code>retval</code> interpretation to map traces to return values<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. Since <code>retval</code> in not
+injective (in general), we need a notion of equality in order to sum the
+probabilities of paths returning the same value.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">open</span> Lean (AssocList)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> update </span>[BEq a] (xs : AssocList a Float) (x : a) (pr : Float)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  : AssocList a Float :=</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">match</span> xs.find? x <span class="kw">with</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    | .some pr&#39; =&gt; xs.replace x (pr + pr&#39;)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    | .none =&gt; xs.insert x pr</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> marginalise </span>[BEq b] (f : a -&gt; b) (xs : List (a × Float))</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  : List (b × Float) :=</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    xs.foldr (<span class="kw">fun</span> (x, pr) ys =&gt; update ys (f x) pr) .empty |&gt;.toList</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co">-- marginal distribution on return values</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> P.marginal </span>[Finite (Tr t)] [BEq a] (p : P t a) : List (a × Float) :=</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  p.enumerate |&gt; marginalise p.retval</span></code></pre></div>
+<p>We can use this to see how the prior probabilities on
+<code>hasDisease</code> compare to the posterior probabilities having
+observed a positive test result in the medical example:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info: [(true, 0.010000), (false, 0.990000)] -/</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> <span class="kw">in</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> medical.marginal</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info: [(true, 0.077640), (false, 0.922360)] -/</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> <span class="kw">in</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> medicalPosTest&#39;.marginal</span></code></pre></div>
+<h3 id="markov-chain-monte-carlo">Markov Chain Monte Carlo</h3>
+<p>For a more interesting example we can implement MCMC inference using
+a version of <a href="https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm">Metropolis-Hastings</a>.</p>
+<p>The basic idea is to generate samples by performing a random walk in
+the space of traces. We’ll have a probabilistic program propose moves,
+and use the Metropolis-Hasting acceptance rule to ensure that the
+resulting distribution on traces coverges to the probability
+distribution represented by a target program.</p>
+<p>The core of the implementation is a stochastic procedure
+<code>mh</code> that takes a single step in such a walk. (i.e. Given the
+current trace, it samples the next trace in the walk.) <code>mh</code>
+is parameterised by target program <code>p</code> and proposal
+<code>q</code>. The proposal is a conditional distribution over traces,
+represented as a function from traces to probabilistic programs.</p>
+<p>The implementation makes use of the sampling and density
+interpretations. The type system ensures that the target and proposal
+are defined over the same space of traces<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- note: generates un-weighted samples</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> mh </span>(p : P t a) (q : Tr t -&gt; P t b) (old : Tr t) : SampW (Tr t) := <span class="cf">do</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- sample from the proposal</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> new &lt;- (q old).sampler</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> rho := (p.density new * (q new).density old)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>           / (p.density old * (q old).density new)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> p := min <span class="dv">1</span> rho <span class="co">-- acceptance probability</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> &lt;- .flip p</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">then</span> <span class="cf">return</span> new <span class="co">-- accept</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span> <span class="cf">return</span> old <span class="co">-- reject</span></span></code></pre></div>
+<p>As an example, we can perform MCMC (posterior) inference for the
+medical diagnosis program. <code>medicalPosTest</code> has a trace with
+type <code>[Bool]</code>, so we’ll write a proposal the negates the
+single <code>Bool</code> in this trace with high probability.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> negateOneBool </span>: Tr [Bool] -&gt; P [Bool] Bool</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  | (<span class="cn">true</span>, ()) =&gt; P.flip <span class="fl">0.01</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  | (<span class="cn">false</span>, ()) =&gt; P.flip <span class="fl">0.99</span></span></code></pre></div>
 <p>We need a little more machinery in order to perform inference:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">def</span><span class="fu"> iterate </span>[Monad m] (f : a -&gt; m a) (x : a) : Nat -&gt; m (List a)</a>
-<a class="sourceLine" id="cb25-2" title="2">  | <span class="dv">0</span> =&gt; <span class="cf">return</span> []</a>
-<a class="sourceLine" id="cb25-3" title="3">  | n+<span class="dv">1</span> =&gt; <span class="cf">do</span> <span class="kw">let</span> y &lt;- f x</a>
-<a class="sourceLine" id="cb25-4" title="4">              <span class="kw">let</span> ys &lt;- iterate f y n</a>
-<a class="sourceLine" id="cb25-5" title="5">              <span class="cf">return</span> y :: ys</a>
-<a class="sourceLine" id="cb25-6" title="6"></a>
-<a class="sourceLine" id="cb25-7" title="7"><span class="kw">def</span><span class="fu"> expectation </span>(f : a -&gt; Float) (xs : List a) : Float :=</a>
-<a class="sourceLine" id="cb25-8" title="8">  xs.foldr (<span class="kw">fun</span> x z =&gt; f x + z) <span class="dv">0</span> / xs.length.toFloat</a>
-<a class="sourceLine" id="cb25-9" title="9"></a>
-<a class="sourceLine" id="cb25-10" title="10"><span class="kw">def</span><span class="fu"> probOf </span>[DecidableEq a] (x : a) : List a -&gt; Float :=</a>
-<a class="sourceLine" id="cb25-11" title="11">  expectation <span class="kw">fun</span> x&#39; =&gt; <span class="cf">if</span> x = x&#39; <span class="cf">then</span> <span class="dv">1</span> <span class="cf">else</span> <span class="dv">0</span></a></code></pre></div>
-<p>We can now use MCMC to compute posterior expectations for the medical diagnosis example. For simplicity I manually specify an initial trace from which to start the walk.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">def</span><span class="fu"> trace0 </span>:= (<span class="cn">false</span>, ())</a>
-<a class="sourceLine" id="cb26-2" title="2"><span class="kw">def</span><span class="fu"> step </span>:= mh medicalPosTest&#39; negateOneBool</a>
-<a class="sourceLine" id="cb26-3" title="3"><span class="kw">def</span><span class="fu"> mcmc </span>:= iterate step trace0 <span class="dv">1000</span></a>
-<a class="sourceLine" id="cb26-4" title="4"><span class="kw">def</span><span class="fu"> samples </span>:= mcmc.run1 (seed := <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb26-5" title="5"></a>
-<a class="sourceLine" id="cb26-6" title="6"><span class="do">/-- info: 0.081000 -/</span></a>
-<a class="sourceLine" id="cb26-7" title="7"><span class="pp">#guard_msgs</span> <span class="kw">in</span></a>
-<a class="sourceLine" id="cb26-8" title="8"><span class="pp">#eval</span> probOf (<span class="cn">true</span>, ()) samples</a></code></pre></div>
-<h1 id="example">Example</h1>
-<h2 id="truncated-geometric">Truncated Geometric</h2>
-<p>The geometric distribution, implemented by repeatedly flipping coins and counting the number of tails seen before a head is obtained, is a classic example of a probabilistic program that makes structural choices. We can’t implement an unbounded geometric distribution this way in this language, but we can implement a truncated geometric.</p>
-<p>I’ll first describe the space of traces generated by such a geometric distribution, truncted to <code>n</code> steps:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">abbrev</span><span class="fu"> Geometric </span>: (n : Nat) -&gt; List <span class="bu">Type</span></a>
-<a class="sourceLine" id="cb27-2" title="2">  | <span class="dv">0</span> =&gt; []</a>
-<a class="sourceLine" id="cb27-3" title="3">  | n+<span class="dv">1</span> =&gt; [[] &lt;&gt; Geometric n]</a></code></pre></div>
-<p>We can enumerate this type for some particular <code>n</code>, and see that all but one of the traces look like a list of <code>Bool</code>s comprising some number of <code>false</code> entries (possibly zero) terminated with a <code>true</code>. The exception is the last trace, where because of truncation, the trace is comprised entirely of <code>false</code> entries.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb28-1" title="1"><span class="do">/-- info:</span></a>
-<a class="sourceLine" id="cb28-2" title="2"><span class="do">  [(⟨true, ()⟩, ()),</span></a>
-<a class="sourceLine" id="cb28-3" title="3"><span class="do">   (⟨false, (⟨true, ()⟩, ())⟩, ()),</span></a>
-<a class="sourceLine" id="cb28-4" title="4"><span class="do">   (⟨false, (⟨false, (⟨true, ()⟩, ())⟩, ())⟩, ()),</span></a>
-<a class="sourceLine" id="cb28-5" title="5"><span class="do">   (⟨false, (⟨false, (⟨false, (⟨true, ()⟩, ())⟩, ())⟩, ())⟩, ()),</span></a>
-<a class="sourceLine" id="cb28-6" title="6"><span class="do">   (⟨false, (⟨false, (⟨false, (⟨false, ()⟩, ())⟩, ())⟩, ())⟩, ())]</span></a>
-<a class="sourceLine" id="cb28-7" title="7"><span class="do">-/</span></a>
-<a class="sourceLine" id="cb28-8" title="8"><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></a>
-<a class="sourceLine" id="cb28-9" title="9"><span class="pp">#eval</span> (Finite.enumerate : List (Tr (Geometric <span class="dv">4</span>)))</a></code></pre></div>
-<p>It’s perhaps most natural to implement the (truncated) geometric recursively:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">theorem</span><span class="fu"> append_nil </span>: xs ++ [] = xs := <span class="kw">by</span> <span class="kw">simp</span></a>
-<a class="sourceLine" id="cb29-2" title="2"></a>
-<a class="sourceLine" id="cb29-3" title="3"><span class="kw">open</span> P <span class="kw">in</span></a>
-<a class="sourceLine" id="cb29-4" title="4"><span class="kw">def</span><span class="fu"> geometric </span>: (n : Nat) -&gt; P (Geometric n) Nat</a>
-<a class="sourceLine" id="cb29-5" title="5">  | <span class="dv">0</span> =&gt; pure <span class="dv">0</span></a>
-<a class="sourceLine" id="cb29-6" title="6">  | n+<span class="dv">1</span> =&gt; cond <span class="co">-- branch on a flip</span></a>
-<a class="sourceLine" id="cb29-7" title="7">                <span class="co">-- `true` branch</span></a>
-<a class="sourceLine" id="cb29-8" title="8">                (pure <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb29-9" title="9">                <span class="co">-- `false` branch</span></a>
-<a class="sourceLine" id="cb29-10" title="10">                <span class="co">-- cast `P (Geometric n ++ []) Nat` to `P (Geometric n) Nat`</span></a>
-<a class="sourceLine" id="cb29-11" title="11">                (congrArg (P . _) append_nil ▸</a>
-<a class="sourceLine" id="cb29-12" title="12">                (geometric n |&gt;.bind λ m =&gt; <span class="co">-- recursive call</span></a>
-<a class="sourceLine" id="cb29-13" title="13">                 pure $ m + <span class="dv">1</span>))             <span class="co">-- +1 for the `false` we got here</span></a></code></pre></div>
-<p>As a sanity check we can look at the marginal distribution on return values for this program:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode lean"><code class="sourceCode lean"><a class="sourceLine" id="cb30-1" title="1"><span class="do">/-- info: [(0, 0.500000),</span></a>
-<a class="sourceLine" id="cb30-2" title="2"><span class="do">           (1, 0.250000),</span></a>
-<a class="sourceLine" id="cb30-3" title="3"><span class="do">           (2, 0.125000),</span></a>
-<a class="sourceLine" id="cb30-4" title="4"><span class="do">           (3, 0.062500),</span></a>
-<a class="sourceLine" id="cb30-5" title="5"><span class="do">           (4, 0.062500)] -/</span></a>
-<a class="sourceLine" id="cb30-6" title="6"><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></a>
-<a class="sourceLine" id="cb30-7" title="7"><span class="pp">#eval</span> (geometric <span class="dv">4</span>).marginal</a></code></pre></div>
-<h1 id="next-steps">Next Steps</h1>
-<p>I more or less achieved what I hoped with this project, though in its current state this is far from being a <em>practical</em> tool. Here are some specific areas that I might look to improve in future work.</p>
-<p>Having <code>cond</code> in the language allows models beyond Bayesian networks to be expressed, but it’s likely there are many probabilistic programs of interest that are not expressible.</p>
-<p>Having to specify observations by giving an index into the trace is cumbersome. Some systems would allow <code>flip</code> statements to be labeled with human readable names. Reflecting this in a trace’s type seems to require something like row types. As an alternative I’m curious whether human readable names can be layered on top of the current implementation as an optional convenience.</p>
-<p>When observing the result of <code>cond</code>, we have to give a <code>Bool</code> as well as an entire sub-trace for the corresponding branch. A more fine-grained approach would be to only require the <code>Bool</code> to be given, and have the corresponding sub-trace merged into the top-level trace.</p>
-<p>Requiring a target and auxilliary program to have a common trace type is overly strict. One step toward loosening this might be to allow different types that are related by a permutation.</p>
-<p>The algorithms implemented here are all relatively naive. It would be interesting to see whether more sophisticated algorithms (such as those requiring automatic differentiation) can be implemented in this setting.</p>
-<h1 id="related-work">Related Work</h1>
-<p>The <a href="https://alexlew.net/papers/trace-types-2020/paper.pdf">trace types</a> paper of Lew et al. covers similar ground and much more besides; it was my main inspiration. I also draw heavily on my experience with <a href="http://webppl.org/">WebPPL</a> and <a href="https://jmlr.csail.mit.edu/papers/v20/18-403.html">Pyro</a>. The Metropolis-Hastings implementation is based on the approach in <a href="https://dl.acm.org/doi/10.1145/3314221.3314642">Gen</a>.</p>
-<section class="footnotes">
+<div class="sourceCode" id="cb25"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> iterate </span>[Monad m] (f : a -&gt; m a) (x : a) : Nat -&gt; m (List a)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  | <span class="dv">0</span> =&gt; <span class="cf">return</span> []</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  | n+<span class="dv">1</span> =&gt; <span class="cf">do</span> <span class="kw">let</span> y &lt;- f x</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>              <span class="kw">let</span> ys &lt;- iterate f y n</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> y :: ys</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> expectation </span>(f : a -&gt; Float) (xs : List a) : Float :=</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  xs.foldr (<span class="kw">fun</span> x z =&gt; f x + z) <span class="dv">0</span> / xs.length.toFloat</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> probOf </span>[DecidableEq a] (x : a) : List a -&gt; Float :=</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  expectation <span class="kw">fun</span> x&#39; =&gt; <span class="cf">if</span> x = x&#39; <span class="cf">then</span> <span class="dv">1</span> <span class="cf">else</span> <span class="dv">0</span></span></code></pre></div>
+<p>We can now use MCMC to compute posterior expectations for the medical
+diagnosis example. For simplicity I manually specify an initial trace
+from which to start the walk.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> trace0 </span>:= (<span class="cn">false</span>, ())</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> step </span>:= mh medicalPosTest&#39; negateOneBool</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> mcmc </span>:= iterate step trace0 <span class="dv">1000</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> samples </span>:= mcmc.run1 (seed := <span class="dv">0</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info: 0.081000 -/</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> <span class="kw">in</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> probOf (<span class="cn">true</span>, ()) samples</span></code></pre></div>
+<h2 id="example">Example</h2>
+<h3 id="truncated-geometric">Truncated Geometric</h3>
+<p>The geometric distribution, implemented by repeatedly flipping coins
+and counting the number of tails seen before a head is obtained, is a
+classic example of a probabilistic program that makes structural
+choices. We can’t implement an unbounded geometric distribution this way
+in this language, but we can implement a truncated geometric.</p>
+<p>I’ll first describe the space of traces generated by such a geometric
+distribution, truncted to <code>n</code> steps:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">abbrev</span><span class="fu"> Geometric </span>: (n : Nat) -&gt; List <span class="bu">Type</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  | <span class="dv">0</span> =&gt; []</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  | n+<span class="dv">1</span> =&gt; [[] &lt;&gt; Geometric n]</span></code></pre></div>
+<p>We can enumerate this type for some particular <code>n</code>, and
+see that all but one of the traces look like a list of
+<code>Bool</code>s comprising some number of <code>false</code> entries
+(possibly zero) terminated with a <code>true</code>. The exception is
+the last trace, where because of truncation, the trace is comprised
+entirely of <code>false</code> entries.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info:</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="do">  [(⟨true, ()⟩, ()),</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="do">   (⟨false, (⟨true, ()⟩, ())⟩, ()),</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="do">   (⟨false, (⟨false, (⟨true, ()⟩, ())⟩, ())⟩, ()),</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="do">   (⟨false, (⟨false, (⟨false, (⟨true, ()⟩, ())⟩, ())⟩, ())⟩, ()),</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="do">   (⟨false, (⟨false, (⟨false, (⟨false, ()⟩, ())⟩, ())⟩, ())⟩, ())]</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="do">-/</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> (Finite.enumerate : List (Tr (Geometric <span class="dv">4</span>)))</span></code></pre></div>
+<p>It’s perhaps most natural to implement the (truncated) geometric
+recursively:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">theorem</span><span class="fu"> append_nil </span>: xs ++ [] = xs := <span class="kw">by</span> <span class="kw">simp</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">open</span> P <span class="kw">in</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span><span class="fu"> geometric </span>: (n : Nat) -&gt; P (Geometric n) Nat</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  | <span class="dv">0</span> =&gt; pure <span class="dv">0</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  | n+<span class="dv">1</span> =&gt; cond <span class="co">-- branch on a flip</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>                <span class="co">-- `true` branch</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>                (pure <span class="dv">0</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>                <span class="co">-- `false` branch</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>                <span class="co">-- cast `P (Geometric n ++ []) Nat` to `P (Geometric n) Nat`</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>                (congrArg (P . _) append_nil ▸</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>                (geometric n |&gt;.bind λ m =&gt; <span class="co">-- recursive call</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>                 pure $ m + <span class="dv">1</span>))             <span class="co">-- +1 for the `false` we got here</span></span></code></pre></div>
+<p>As a sanity check we can look at the marginal distribution on return
+values for this program:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode lean"><code class="sourceCode lean"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="do">/-- info: [(0, 0.500000),</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="do">           (1, 0.250000),</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="do">           (2, 0.125000),</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="do">           (3, 0.062500),</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="do">           (4, 0.062500)] -/</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#guard_msgs</span> (whitespace := lax) <span class="kw">in</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#eval</span> (geometric <span class="dv">4</span>).marginal</span></code></pre></div>
+<h2 id="next-steps">Next Steps</h2>
+<p>I more or less achieved what I hoped with this project, though in its
+current state this is far from being a <em>practical</em> tool. Here are
+some specific areas that I might look to improve in future work.</p>
+<p>Having <code>cond</code> in the language allows models beyond
+Bayesian networks to be expressed, but it’s likely there are many
+probabilistic programs of interest that are not expressible.</p>
+<p>Having to specify observations by giving an index into the trace is
+cumbersome. Some systems would allow <code>flip</code> statements to be
+labeled with human readable names. Reflecting this in a trace’s type
+seems to require something like row types. As an alternative I’m curious
+whether human readable names can be layered on top of the current
+implementation as an optional convenience.</p>
+<p>When observing the result of <code>cond</code>, we have to give a
+<code>Bool</code> as well as an entire sub-trace for the corresponding
+branch. A more fine-grained approach would be to only require the
+<code>Bool</code> to be given, and have the corresponding sub-trace
+merged into the top-level trace.</p>
+<p>Requiring a target and auxilliary program to have a common trace type
+is overly strict. One step toward loosening this might be to allow
+different types that are related by a permutation.</p>
+<p>The algorithms implemented here are all relatively naive. It would be
+interesting to see whether more sophisticated algorithms (such as those
+requiring automatic differentiation) can be implemented in this
+setting.</p>
+<h2 id="related-work">Related Work</h2>
+<p>The <a href="https://alexlew.net/papers/trace-types-2020/paper.pdf">trace
+types</a> paper of Lew et al. covers similar ground and much more
+besides; it was my main inspiration. I also draw heavily on my
+experience with <a href="http://webppl.org/">WebPPL</a> and <a href="https://jmlr.csail.mit.edu/papers/v20/18-403.html">Pyro</a>. The
+Metropolis-Hastings implementation is based on the approach in <a href="https://dl.acm.org/doi/10.1145/3314221.3314642">Gen</a>.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>In a more practical system <code>flip</code> would be replaced by <code>sample</code> which would allow draws from any primitive distribution. I’m restricting myself to only supporting draws from a Bernoulli distribution for simplicity. I expect that relaxing this would be straight-forward.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>Though it may be a “graded monad”, since the extra type index combines monoidally.<a href="#fnref2" class="footnote-back">↩</a></p></li>
-<li id="fn3"><p>Without a <code>Monad</code> instance we can’t use <code>do</code> notation, though it would be possible to create custom notation using macros.<a href="#fnref3" class="footnote-back">↩</a></p></li>
-<li id="fn4"><p>This example is taken from <a href="http://probmods.org/chapters/conditioning.html#example-causal-inference-in-medical-diagnosis">http://probmods.org/chapters/conditioning.html</a><a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p>This isn’t an <em>efficient</em> approach. We compute the return value when computing the density, then throw it out, only to recompute it here.<a href="#fnref5" class="footnote-back">↩</a></p></li>
-<li id="fn6"><p>This isn’t sufficient to ensure correctness. e.g. <code>q</code> needs to represent a normalized distribution, i.e. not call <code>factor</code>, which isn’t enforced by the types. I’ve intentionally not addressed that here in order to keep the focus on traces.<a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>In a more practical system <code>flip</code> would be
+replaced by <code>sample</code> which would allow draws from any
+primitive distribution. I’m restricting myself to only supporting draws
+from a Bernoulli distribution for simplicity. I expect that relaxing
+this would be straight-forward.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Though it may be a “graded monad”, since the extra type
+index combines monoidally.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Without a <code>Monad</code> instance we can’t use
+<code>do</code> notation, though it would be possible to create custom
+notation using macros.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>This example is taken from <a href="http://probmods.org/chapters/conditioning.html#example-causal-inference-in-medical-diagnosis">http://probmods.org/chapters/conditioning.html</a><a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>This isn’t an <em>efficient</em> approach. We compute
+the return value when computing the density, then throw it out, only to
+recompute it here.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>This isn’t sufficient to ensure correctness.
+e.g. <code>q</code> needs to represent a normalized distribution,
+i.e. not call <code>factor</code>, which isn’t enforced by the types.
+I’ve intentionally not addressed that here in order to keep the focus on
+traces.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
+</div>
 </body>
 </html>
