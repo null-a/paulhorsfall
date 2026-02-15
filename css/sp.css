@@ -75,40 +75,6 @@ th, td {
   padding: 0.3em 0.4em;
   text-align: left;
 }
-@media (prefers-color-scheme: dark) {
-  body {
-    color: #bbb;
-    background: #222;
-  }
-  a:link {
-    color: #9bf;
-  }
-  a:visited {
-    color: #caf;
-  }
-  a:focus, a:hover {
-    color: #9cf;
-  }
-  a:active {
-    color: #faa;
-  }
-  pre, code, samp, kbd {
-    color: #6cf;
-  }
-  pre kbd {
-    color: #9c9;
-  }
-  pre, blockquote {
-    background: #111;
-  }
-  blockquote {
-    border-color: #444;
-  }
-  th, td {
-    border-color: #666;
-  }
-}
-
 .footpara { display: inline; }
 .footdef  { margin-bottom: 1em; }
 .figure { padding: 1em; }
