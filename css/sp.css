@@ -113,5 +113,5 @@ th, td {
 .footdef  { margin-bottom: 1em; }
 .figure { padding: 1em; }
 .figure p { text-align: center; font-style: italic; }
-#preamble { margin: 0; padding: 0.4em; border-bottom: 1px solid #999; }
+#preamble { margin: 0; padding: 0.4em; border-bottom: 1px solid #999; background-color: ivory; }
 #content { margin: 0 auto; padding: 0 1em; max-width: 40em; }
