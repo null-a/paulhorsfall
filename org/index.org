@@ -8,8 +8,8 @@ contact me is to send an email to [[mailto:horsfallp@gmail.com][horsfallp@gmail.
 
 * Projects
 
+- [[https://hackaday.io/project/205608-2-channel-usb-daq][2 Channel USB DAQ]]
 - [[https://paulhorsfall.co.uk/articles/typed-traces-lean.html][Probabilistic Programming with Typed Traces in Lean]]
-- [[https://arcv.me][arcv.me]] -- Minimalist web page archiving
 - [[https://hackaday.io/project/196636-homebrew-sdr-receiver][Homebrew SDR Receiver]]
 - [[file:articles/scope.org][Sampling Scope Prototype]]
 - [[https://github.com/null-a/frost][frost]] -- A simple RISC-V CPU implemented in Verilog
